@@ -982,7 +982,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 ['Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','Home','End'].indexOf(e.key) >= 0;
             if (e.key === 'Enter') {
                 e.preventDefault();
-                rastrear();
+                var btn = document.getElementById('btnRastrear');
+                if (btn) btn.click();
                 return;
             }
             if (!controle && !/^\d$/.test(e.key)) {
