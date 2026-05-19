@@ -903,7 +903,8 @@ function showLoading(on) {
     document.getElementById('loading').style.display = on ? 'block' : 'none';
 }
 function showWelcome(on) {
-    document.getElementById('welcome').style.display = on ? 'block' : 'none';
+    var el = document.getElementById('welcome');
+    if (el) el.style.display = on ? 'block' : 'none';
 }
 function showError(title, msg) {
     document.getElementById('errorTitle').textContent = title || 'Erro';
