@@ -178,8 +178,8 @@
             text-transform: uppercase; letter-spacing: .6px;
             margin-bottom: 18px;
         }
-        .search-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; }
-        .search-field { flex: 1; min-width: 260px; }
+        .search-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
+        .search-field { flex: 1; max-width: 240px; }
         .search-field label {
             display: block; font-size: .75rem; font-weight: 700;
             color: var(--text-muted); text-transform: uppercase;
@@ -441,6 +441,7 @@
             .brand-lockup { flex-direction: column; text-align: center; }
             .brand-logo { width: 160px; height: 160px; }
             .search-row { align-items: stretch; }
+            .search-field { max-width: none; }
             .btn-search, .btn-clear { width: 100%; }
             .step-icon { width: 50px; height: 50px; }
             .step-line { top: -24px; }
@@ -493,7 +494,7 @@
                        autocomplete="off"
                        inputmode="numeric"
                        pattern="[0-9]*"
-                       maxlength="50"
+                       maxlength="12"
                        autofocus/>
             </div>
             <button class="btn-search" id="btnRastrear" onclick="rastrear()"><svg class="icon-svg icon-gap"><use href="#i-search" xlink:href="#i-search"></use></svg>Consultar</button>
