@@ -574,7 +574,7 @@ async function fetchOcorrencias(numeroNota) {
               "TO_CHAR(PRAZO, 'DD/MM/YYYY') AS PRAZO_FMT, " +
               "TO_CHAR(DATAPREVISAOENTREGA, 'DD/MM/YYYY') AS PREVISAO_FMT, " +
               "TO_CHAR(DATAENTREGA, 'DD/MM/YYYY') AS ENTREGA_FMT, " +
-              "CAST(NULL AS VARCHAR2(1000)) AS OBSERVACAO_TXT " +
+              "DBMS_LOB.SUBSTR(OBSERVACAO, 4000, 1) AS OBSERVACAO_TXT " +
               "FROM AD_OCORRENCIAS " +
               "WHERE TRIM(NUMERONOTA) = '" + numeroNota.replace(/'/g,"''") + "' " +
               "ORDER BY DATA ASC, ID ASC";
@@ -831,9 +831,6 @@ function renderResultado(rows) {
         '</div>' +
         '<div class="detail-item"><label>Data de Entrega</label>' +
             (dataEntrega ? '<span class="hl-green">' + icon('check') + ' ' + esc(dataEntrega) + '</span>' : '<span class="empty">-</span>') +
-        '</div>' +
-        '<div class="detail-item"><label>Transportadora</label>' +
-            (transp  ? '<span>' + icon('truck') + ' ' + esc(transp)  + '</span>' : '<span class="empty">-</span>') +
         '</div>';
 
     // --- Progress bar ---
