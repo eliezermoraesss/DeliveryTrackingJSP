@@ -25,7 +25,7 @@
         :root {
             --brand:        #0f172a;
             --brand-soft:   #1e293b;
-            --page-bg:      #f1f5f9;
+            --page-bg:      #dbe4ee;
             --surface:      #ffffff;
             --line:         #e5e7eb;
             --muted-line:   #d1d5db;
@@ -59,8 +59,8 @@
         body {
             font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
             background:
-                radial-gradient(circle at top left, rgba(59, 130, 246, .14), transparent 34rem),
-                linear-gradient(180deg, #f8fafc 0%, var(--page-bg) 100%);
+                radial-gradient(circle at top left, rgba(59, 130, 246, .18), transparent 34rem),
+                linear-gradient(180deg, #e8eef5 0%, var(--page-bg) 100%);
             min-height: 100vh;
             padding: 30px 16px 54px;
             color: var(--text);
@@ -328,6 +328,7 @@
         .step-icon .icon-svg { width: 27px; height: 27px; }
         .step-icon.done    { background: var(--green-ok);    border-color: var(--green-ok);    color: #fff; box-shadow: 0 8px 18px rgba(34,197,94,.22); }
         .step-icon.active  { background: var(--blue-primary);border-color: var(--blue-primary);color: #fff; box-shadow: 0 0 0 7px rgba(59,130,246,.18); }
+        .step-icon.active-entregue { background: var(--green-ok); border-color: var(--green-ok); color: #fff; box-shadow: 0 0 0 7px rgba(34,197,94,.18); }
         .step-icon.pending { background: var(--white);        border-color: var(--gray-300);    color: var(--gray-400); }
 
         .step-label {
@@ -337,6 +338,7 @@
         }
         .step-label.done   { color: var(--green-ok); }
         .step-label.active { color: var(--blue-primary); }
+        .step-label.active-entregue { color: var(--green-ok); }
 
         .step-line {
             flex: 1; height: 4px;
@@ -380,7 +382,7 @@
         .dot-default  { background: var(--gray-400);    box-shadow: 0 0 0 2px var(--gray-400); }
 
         .tl-card {
-            background: var(--gray-300); border: 1px solid var(--gray-200);
+            background: var(--gray-100); border: 1px solid var(--gray-200);
             border-radius: var(--radius-md); padding: 16px 18px;
             transition: var(--tr);
         }
@@ -795,6 +797,7 @@ function renderProgress(currentStep) {
     steps.forEach(function(s, i) {
         var stepNum = i + 1;
         var iconCls = stepNum < currentStep ? 'done' : (stepNum === currentStep ? 'active' : 'pending');
+        if (stepNum === 4 && stepNum === currentStep) iconCls = 'active-entregue';
         var lblCls  = iconCls;
         html += '<div class="step-item">' +
                   '<div class="step-icon ' + iconCls + '">' + s.icon + '</div>' +
