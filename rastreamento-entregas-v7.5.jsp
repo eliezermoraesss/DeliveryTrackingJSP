@@ -380,7 +380,7 @@
         .dot-default  { background: var(--gray-400);    box-shadow: 0 0 0 2px var(--gray-400); }
 
         .tl-card {
-            background: var(--gray-100); border: 1px solid var(--gray-200);
+            background: var(--gray-300); border: 1px solid var(--gray-200);
             border-radius: var(--radius-md); padding: 16px 18px;
             transition: var(--tr);
         }
@@ -390,22 +390,54 @@
 
         .tl-top {
             display: flex; justify-content: space-between;
-            align-items: flex-start; gap: 10px; flex-wrap: wrap;
+            align-items: flex-start; gap: 14px; flex-wrap: wrap;
         }
-        .tl-event    { font-size: .93rem; font-weight: 700; color: var(--gray-800); }
-        .tl-datetime { font-size: .78rem; color: var(--gray-600); white-space: nowrap; }
+        .tl-event {
+            font-size: 1rem;
+            font-weight: 850;
+            color: var(--brand);
+            line-height: 1.25;
+        }
+        .tl-timebox {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 6px;
+            flex: 0 0 auto;
+        }
+        .tl-datetime {
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            font-size: .84rem;
+            font-weight: 800;
+            color: var(--brand);
+            white-space: nowrap;
+            background: #fef3c7;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            padding: 6px 10px;
+            box-shadow: 0 4px 10px rgba(15, 23, 42, .05);
+        }
 
         .cod-badge {
-            display: inline-block;
-            background: var(--blue-light); color: var(--blue-primary);
-            font-size: .66rem; font-weight: 700;
-            padding: 2px 8px; border-radius: 999px; margin-left: 6px;
+            display: inline-flex;
+            align-items: center;
+            background: var(--blue-light); color: var(--blue-dark);
+            font-size: .72rem; font-weight: 850;
+            padding: 4px 9px; border-radius: 999px;
             vertical-align: middle;
+        }
+        .cod-row {
+            margin-top: 10px;
+            display: flex;
+            justify-content: flex-end;
         }
 
         .tl-meta { margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
         .tl-meta-item {
-            font-size: .76rem; color: var(--gray-600);
+            font-size: .78rem; color: var(--brand);
+            font-weight: 650;
             display: flex; align-items: center; gap: 3px;
         }
         .tl-meta-item strong { color: var(--gray-800); }
@@ -425,7 +457,8 @@
             border-left: 3px solid var(--blue-primary);
             border-radius: 0 6px 6px 0;
             padding: 9px 13px;
-            font-size: .8rem; color: var(--gray-800);
+            font-size: .82rem; color: var(--gray-800);
+            font-weight: 700;
             line-height: 1.6; white-space: pre-wrap; word-break: break-word;
         }
         .tl-obs-label {
@@ -445,6 +478,8 @@
             .btn-search, .btn-clear { width: 100%; }
             .step-icon { width: 50px; height: 50px; }
             .step-line { top: -24px; }
+            .tl-timebox { align-items: flex-start; width: 100%; }
+            .cod-row { justify-content: flex-start; }
         }
     </style>
 </head>
@@ -838,7 +873,7 @@ function renderResultado(rows) {
 
     // --- Timeline ---
     var tlHtml = '';
-    rows.forEach(function(r) {
+    rows.forEach(function(r, idx) {
         var cod      = String(field(r, 'CODIGOOCORRENCIATRANSPORTADORA') || '').trim();
         var nome     = field(r, 'NOMEOCORRENCIA') || 'Ocorrência';
         var dataFmt  = field(r, 'DATA_FMT');
@@ -851,23 +886,24 @@ function renderResultado(rows) {
         var tCte     = field(r, 'NUMEROCTE');
 
         var dc = getDotClass(cod);
+        var isUltimoStatus = idx === rows.length - 1;
 
         tlHtml += '<div class="tl-item">';
         tlHtml +=   '<div class="tl-dot ' + dc.dot + '">' + dc.txt + '</div>';
         tlHtml +=   '<div class="tl-card ' + dc.card + '">';
         tlHtml +=     '<div class="tl-top">';
-        tlHtml +=       '<div><span class="tl-event">' + esc(nome) + '</span>';
-        if (cod) tlHtml += '<span class="cod-badge">Cód. ' + esc(cod) + '</span>';
+        tlHtml +=       '<div><span class="tl-event">' + esc(nome) + '</span></div>';
+        tlHtml +=       '<div class="tl-timebox">';
+        tlHtml +=         '<span class="tl-datetime">' + icon('calendar') + ' ' + esc(dataFmt) + '</span>';
         tlHtml +=       '</div>';
-        tlHtml +=       '<span class="tl-datetime">' + icon('calendar') + ' ' + esc(dataFmt) + '</span>';
         tlHtml +=     '</div>';
 
         // Meta
         var metaItems = [];
-        if (tCnpj)   metaItems.push(icon('building') + ' <strong>' + esc(tCnpj)   + '</strong>');
-        if (tTransp) metaItems.push(icon('truck') + ' <strong>' + esc(tTransp) + '</strong>');
-        if (tUnid)   metaItems.push(icon('box') + ' ' + esc(tUnid));
-        if (tCte)    metaItems.push(icon('invoice') + ' CT-e: <strong>' + esc(tCte) + '</strong>');
+        //if (tCnpj)   metaItems.push(icon('building') + ' <strong>' + esc(tCnpj)   + '</strong>');
+        //if (tTransp) metaItems.push(icon('truck') + ' <strong>' + esc(tTransp) + '</strong>');
+        //if (tUnid)   metaItems.push(icon('box') + ' ' + esc(tUnid));
+        if (tCte)    metaItems.push(icon('invoice') + ' CT-e: ' + esc(tCte));
 
         if (metaItems.length) {
             tlHtml += '<div class="tl-meta">';
@@ -875,12 +911,14 @@ function renderResultado(rows) {
             tlHtml += '</div>';
         }
 
-        if (prevFmt)   tlHtml += '<div class="tl-pill pill-yellow">' + icon('clock') + ' Previsão de entrega: <strong>' + esc(prevFmt) + '</strong></div>';
+        if (prevFmt && isUltimoStatus) tlHtml += '<div class="tl-pill pill-yellow">' + icon('clock') + ' Previsão de entrega: <strong>' + esc(prevFmt) + '</strong></div>';
         if (entFmt)    tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
 
         if (obs && obs.trim()) {
             tlHtml += '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obs.trim()) + '</div>';
         }
+
+        if (cod) tlHtml += '<div class="cod-row"><span class="cod-badge">Cód. ' + esc(cod) + '</span></div>';
 
         tlHtml += '</div></div>';
     });
