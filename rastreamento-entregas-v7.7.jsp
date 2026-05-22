@@ -272,10 +272,73 @@
             display: flex; justify-content: space-between;
             align-items: flex-start; flex-wrap: wrap; gap: 12px;
         }
-        .nota-header h3  { color: #fff; font-size: 1.3rem; font-weight: 700; }
+        .nota-header-main { min-width: 260px; flex: 1 1 auto; }
+        .nota-header h3  {
+            color: #fff; font-size: 1.3rem; font-weight: 700;
+            display: flex; align-items: center; gap: 10px; flex-wrap: wrap;
+        }
+        .title-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            padding: 5px 9px;
+            border-radius: 999px;
+            background: rgba(255,255,255,.08);
+            color: rgba(255,255,255,.86);
+            font-size: .72rem;
+            font-weight: 800;
+        }
         .nota-header-meta {
             color: rgba(255,255,255,.72); font-size: .82rem;
             margin-top: 5px; display: flex; gap: 14px; flex-wrap: wrap;
+        }
+        .nota-actions {
+            display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+        .btn-danfe {
+            display: inline-flex; align-items: center; gap: 7px;
+            height: 38px; padding: 0 14px;
+            border-radius: 999px; border: 1px solid rgba(255,255,255,.28);
+            background: rgba(255,255,255,.08); color: #fff;
+            font-size: .74rem; font-weight: 800; text-transform: uppercase;
+            letter-spacing: .4px; cursor: pointer; transition: var(--tr);
+        }
+        .btn-danfe:hover { background: rgba(255,255,255,.16); transform: translateY(-1px); }
+        .route-trail {
+            flex: 1 0 100%;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-top: 6px;
+        }
+        .route-step {
+            position: relative;
+            background: rgba(255,255,255,.06);
+            border: 1px solid rgba(255,255,255,.10);
+            border-radius: 10px;
+            padding: 10px 12px;
+            min-height: 74px;
+        }
+        .route-step label {
+            display: block;
+            font-size: .65rem; font-weight: 850;
+            color: rgba(255,255,255,.62);
+            text-transform: uppercase; letter-spacing: .5px;
+            margin-bottom: 5px;
+        }
+        .route-step strong {
+            display: block;
+            color: #fff;
+            font-size: .82rem;
+            line-height: 1.25;
+            word-break: break-word;
+        }
+        .route-step span {
+            display: block;
+            margin-top: 3px;
+            color: rgba(255,255,255,.72);
+            font-size: .72rem;
+            line-height: 1.25;
+            word-break: break-word;
         }
 
         /* Badge status */
@@ -473,6 +536,8 @@
             .search-card { padding: 20px 18px; }
             .nota-header, .nota-details, .progress-section, .timeline-section { padding-left: 18px; padding-right: 18px; }
             .nota-header { flex-direction: column; }
+            .nota-actions { justify-content: flex-start; }
+            .route-trail { grid-template-columns: 1fr; }
             .brand-lockup { flex-direction: column; text-align: center; }
             .brand-logo { width: 160px; height: 160px; }
             .search-row { align-items: stretch; }
@@ -559,11 +624,17 @@
     <div class="nota-card" id="notaCard">
 
         <div class="nota-header" id="notaHeader">
-            <div>
+            <div class="nota-header-main">
                 <h3 id="notaTitulo"></h3>
                 <div class="nota-header-meta" id="notaMeta"></div>
             </div>
-            <span class="status-badge" id="statusBadge"></span>
+            <div class="nota-actions">
+                <button type="button" class="btn-danfe" id="btnDanfe" onclick="baixarDanfe()">
+                    <svg class="icon-svg icon-gap"><use href="#i-invoice" xlink:href="#i-invoice"></use></svg>Baixar nota
+                </button>
+                <span class="status-badge" id="statusBadge"></span>
+            </div>
+            <div class="route-trail" id="routeTrail"></div>
         </div>
 
         <div class="nota-details" id="notaDetails"></div>
@@ -587,13 +658,17 @@
 // que já mantém a sessão do usuário logado
 // ============================================================
 var BASE_URL = '/mge/service.sbr?serviceName=DbExplorerSP.executeQuery&outputType=json';
+var DANFE_ENDPOINT = '';
+var danfeContext = {};
 var QUERY_COLUMNS = [
     'ID', 'NUMERONOTA', 'SERIENOTA', 'CNPJEMISSORCTE', 'EMITENTENOTA',
     'CHAVECTE', 'CHAVENOTA', 'CODIGOOCORRENCIATRANSPORTADORA',
     'NOMEOCORRENCIA', 'CODIGOOCORRENCIA', 'CODIGORASTREIO',
     'TRANSPORTADORA', 'UNIDADE', 'NUMEROCTE', 'AGENDAMENTOENTREGA',
     'NUMEROPRENOTA', 'DATA_FMT', 'PRAZO_FMT', 'PREVISAO_FMT',
-    'ENTREGA_FMT', 'OBSERVACAO_TXT'
+    'ENTREGA_FMT', 'OBSERVACAO_TXT', 'CNPJ_ORIGEM', 'NOMEFANTASIA_ORIGEM',
+    'CNPJ_TRANSP', 'NOME_TRANSP', 'TRANSP_REDESPACHO',
+    'NOME_TRANSP_REDESPACHO', 'CNPJ_CLIENTE', 'NOME_CLIENTE'
 ];
 
 function getSankhyaToken() {
@@ -604,17 +679,28 @@ function getSankhyaToken() {
 }
 
 async function fetchOcorrencias(numeroNota) {
-    var sql = "SELECT ID, NUMERONOTA, SERIENOTA, CNPJEMISSORCTE, EMITENTENOTA, CHAVECTE, CHAVENOTA, " +
-              "CODIGOOCORRENCIATRANSPORTADORA, NOMEOCORRENCIA, CODIGOOCORRENCIA, CODIGORASTREIO, " +
-              "TRANSPORTADORA, UNIDADE, NUMEROCTE, AGENDAMENTOENTREGA, NUMEROPRENOTA, " +
-              "TO_CHAR(DATA, 'DD/MM/YYYY HH24:MI') AS DATA_FMT, " +
-              "TO_CHAR(PRAZO, 'DD/MM/YYYY') AS PRAZO_FMT, " +
-              "TO_CHAR(DATAPREVISAOENTREGA, 'DD/MM/YYYY') AS PREVISAO_FMT, " +
-              "TO_CHAR(DATAENTREGA, 'DD/MM/YYYY') AS ENTREGA_FMT, " +
-              "DBMS_LOB.SUBSTR(OBSERVACAO, 4000, 1) AS OBSERVACAO_TXT " +
-              "FROM AD_OCORRENCIAS " +
-              "WHERE TRIM(NUMERONOTA) = '" + numeroNota.replace(/'/g,"''") + "' " +
-              "ORDER BY DATA ASC, ID ASC";
+    var sql = "SELECT OC.ID, OC.NUMERONOTA, OC.SERIENOTA, OC.CNPJEMISSORCTE, OC.EMITENTENOTA, OC.CHAVECTE, OC.CHAVENOTA, " +
+              "OC.CODIGOOCORRENCIATRANSPORTADORA, OC.NOMEOCORRENCIA, OC.CODIGOOCORRENCIA, OC.CODIGORASTREIO, " +
+              "OC.TRANSPORTADORA, OC.UNIDADE, OC.NUMEROCTE, OC.AGENDAMENTOENTREGA, OC.NUMEROPRENOTA, " +
+              "TO_CHAR(OC.DATA, 'DD/MM/YYYY HH24:MI') AS DATA_FMT, " +
+              "TO_CHAR(OC.PRAZO, 'DD/MM/YYYY') AS PRAZO_FMT, " +
+              "TO_CHAR(OC.DATAPREVISAOENTREGA, 'DD/MM/YYYY') AS PREVISAO_FMT, " +
+              "TO_CHAR(OC.DATAENTREGA, 'DD/MM/YYYY') AS ENTREGA_FMT, " +
+              "DBMS_LOB.SUBSTR(OC.OBSERVACAO, 4000, 1) AS OBSERVACAO_TXT, " +
+              "OC.EMITENTENOTA AS CNPJ_ORIGEM, " +
+              "EMP.NOMEFANTASIA AS NOMEFANTASIA_ORIGEM, " +
+              "OC.TRANSPORTADORA AS CNPJ_TRANSP, " +
+              "(SELECT MAX(P1.NOMEPARC) FROM TGFPAR P1 WHERE P1.CGC_CPF = OC.TRANSPORTADORA) AS NOME_TRANSP, " +
+              "CAB.CODPARCREDESPACHO AS TRANSP_REDESPACHO, " +
+              "(SELECT MAX(P2.NOMEPARC) FROM TGFPAR P2 WHERE P2.CODPARC = CAB.CODPARCREDESPACHO) AS NOME_TRANSP_REDESPACHO, " +
+              "PAR.CGC_CPF AS CNPJ_CLIENTE, " +
+              "(SELECT MAX(P3.NOMEPARC) FROM TGFPAR P3 WHERE P3.CGC_CPF = PAR.CGC_CPF) AS NOME_CLIENTE " +
+              "FROM AD_OCORRENCIAS OC " +
+              "LEFT JOIN TGFCAB CAB ON OC.CHAVENOTA = CAB.CHAVENFE AND OC.NUMERONOTA = CAB.NUMNOTA " +
+              "LEFT JOIN TGFPAR PAR ON CAB.CODPARC = PAR.CODPARC " +
+              "LEFT JOIN TSIEMP EMP ON OC.EMITENTENOTA = EMP.CGC " +
+              "WHERE TRIM(OC.NUMERONOTA) = '" + numeroNota.replace(/'/g,"''") + "' " +
+              "ORDER BY OC.DATA ASC, OC.ID ASC";
 
     var payload = {
         serviceName: "DbExplorerSP.executeQuery",
@@ -782,6 +868,59 @@ function orDash(v, prefix) {
     return '<span>' + esc(prefix || '') + esc(v) + '</span>';
 }
 
+function firstField(rows, name) {
+    for (var i = 0; i < rows.length; i++) {
+        var value = field(rows[i], name);
+        if (value && String(value).trim()) return value;
+    }
+    return '';
+}
+
+function routeStep(label, codigo, nome) {
+    if (!codigo && !nome) return '';
+    return '<div class="route-step">' +
+           '<label>' + esc(label) + '</label>' +
+           '<strong>' + esc(codigo || '-') + '</strong>' +
+           '<span>' + esc(nome || '-') + '</span>' +
+           '</div>';
+}
+
+function renderRouteTrail(rows) {
+    var origemCnpj = firstField(rows, 'CNPJ_ORIGEM');
+    var origemNome = firstField(rows, 'NOMEFANTASIA_ORIGEM');
+    var transpCnpj = firstField(rows, 'CNPJ_TRANSP');
+    var transpNome = firstField(rows, 'NOME_TRANSP');
+    var redespacho = firstField(rows, 'TRANSP_REDESPACHO');
+    var redespNome = firstField(rows, 'NOME_TRANSP_REDESPACHO');
+    var clienteCnpj = firstField(rows, 'CNPJ_CLIENTE');
+    var clienteNome = firstField(rows, 'NOME_CLIENTE');
+
+    var html = '';
+    html += routeStep('Origem', origemCnpj, origemNome);
+    html += routeStep('Transportadora', transpCnpj, transpNome);
+    if (redespacho) html += routeStep('Redespacho', 'Cod. ' + redespacho, redespNome);
+    html += routeStep('Cliente', clienteCnpj, clienteNome);
+
+    document.getElementById('routeTrail').innerHTML = html;
+}
+
+function resolveDanfeEndpoint() {
+    if (!DANFE_ENDPOINT) return '';
+    return DANFE_ENDPOINT
+        .replace(/\{NUMERONOTA\}/g, encodeURIComponent(danfeContext.numeronota || ''))
+        .replace(/\{CHAVENOTA\}/g, encodeURIComponent(danfeContext.chavenota || ''))
+        .replace(/\{CHAVECTE\}/g, encodeURIComponent(danfeContext.chavecte || ''));
+}
+
+function baixarDanfe() {
+    var endpoint = resolveDanfeEndpoint();
+    if (!endpoint) {
+        alert('Endpoint do DANFE ainda nao configurado.');
+        return;
+    }
+    window.open(endpoint, '_blank');
+}
+
 // ============================================================
 // RENDER PROGRESS BAR
 // ============================================================
@@ -824,6 +963,8 @@ function renderResultado(rows) {
     // --- Resumo (calcular a partir das rows) ---
     var numeronota  = field(rows[0], 'NUMERONOTA');
     var serienota   = field(rows[0], 'SERIENOTA');
+    var chavenota   = field(rows[0], 'CHAVENOTA');
+    var chavecte    = field(rows[0], 'CHAVECTE');
     var cnpj        = field(rows[0], 'CNPJEMISSORCTE');
     var transp      = field(rows[0], 'TRANSPORTADORA');
     var rastreio    = '';
@@ -846,14 +987,19 @@ function renderResultado(rows) {
     });
 
     var st = getStatus(ultimoCod);
+    danfeContext = {
+        numeronota: numeronota,
+        chavenota: chavenota,
+        chavecte: chavecte
+    };
 
     // --- Header da nota ---
-    document.getElementById('notaTitulo').innerHTML = icon('file', 'icon-gap') + 'NF ' + esc(numeronota);
-    var metaHtml = '';
-    if (serienota) metaHtml += '<span>' + icon('clipboard') + ' Série: ' + esc(serienota) + '</span>';
-    if (cnpj)      metaHtml += '<span>' + icon('building') + ' ' + esc(cnpj) + '</span>';
-    metaHtml += '<span>' + icon('list') + ' ' + rows.length + ' ocorrência(s)</span>';
-    document.getElementById('notaMeta').innerHTML = metaHtml;
+    var tituloHtml = icon('file', 'icon-gap') + 'NF ' + esc(numeronota);
+    if (serienota) tituloHtml += '<span class="title-pill">' + icon('clipboard') + ' Série: ' + esc(serienota) + '</span>';
+    tituloHtml += '<span class="title-pill">' + icon('list') + ' ' + rows.length + ' ocorrência(s)</span>';
+    document.getElementById('notaTitulo').innerHTML = tituloHtml;
+    document.getElementById('notaMeta').innerHTML = '';
+    renderRouteTrail(rows);
 
     var badge = document.getElementById('statusBadge');
     badge.className = 'status-badge ' + st.cls;
