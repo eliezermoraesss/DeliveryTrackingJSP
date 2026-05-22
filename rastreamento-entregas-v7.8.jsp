@@ -438,6 +438,7 @@
         }
         .tl-dot .icon-svg { width: 15px; height: 15px; }
         .dot-entregue { background: var(--green-ok);    box-shadow: 0 0 0 2px var(--green-ok); }
+        .dot-redespacho { background: var(--yellow);     box-shadow: 0 0 0 2px var(--yellow); color: #442800; }
         .dot-cidade   { background: #7c3aed;            box-shadow: 0 0 0 2px #7c3aed; }
         .dot-transito { background: var(--blue-primary);box-shadow: 0 0 0 2px var(--blue-primary); }
         .dot-coleta   { background: var(--gray-600);    box-shadow: 0 0 0 2px var(--gray-600); }
@@ -452,6 +453,8 @@
         .tl-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-primary); background: #f0f4ff; }
         .tl-card.card-entregue { background: var(--green-light); border-color: #a8d5b5; }
         .tl-card.card-entregue:hover { background: #d4edda; }
+        .tl-card.card-redespacho { background: #ffedd5; border-color: #fdba74; }
+        .tl-card.card-redespacho:hover { background: #fed7aa; border-color: var(--yellow); }
 
         .tl-top {
             display: flex; justify-content: space-between;
@@ -856,6 +859,12 @@ function getDotClass(cod) {
     return                               { dot: 'dot-default',  card: '',              txt: icon('circle') };
 }
 
+function isEntregueRow(row) {
+    var cod = String(field(row, 'CODIGOOCORRENCIATRANSPORTADORA') || '').trim();
+    var nome = String(field(row, 'NOMEOCORRENCIA') || '').toUpperCase();
+    return cod === '01' || cod === '1' || nome.indexOf('ENTREGUE') >= 0;
+}
+
 function esc(s) {
     if (!s) return '';
     return String(s)
@@ -1022,6 +1031,7 @@ function renderResultado(rows) {
 
     // --- Timeline ---
     var tlHtml = '';
+    var hasRedespacho = !!firstField(rows, 'TRANSP_REDESPACHO');
     rows.forEach(function(r, idx) {
         var cod      = String(field(r, 'CODIGOOCORRENCIATRANSPORTADORA') || '').trim();
         var nome     = field(r, 'NOMEOCORRENCIA') || 'Ocorrência';
@@ -1035,6 +1045,11 @@ function renderResultado(rows) {
         var tCte     = field(r, 'NUMEROCTE');
 
         var dc = getDotClass(cod);
+        var isRedespachoTimeline = hasRedespacho && isEntregueRow(r) && idx < rows.length - 1;
+        if (isRedespachoTimeline) {
+            nome = 'REDESPACHO';
+            dc = { dot: 'dot-redespacho', card: 'card-redespacho', txt: icon('truck') };
+        }
         var isUltimoStatus = idx === rows.length - 1;
 
         tlHtml += '<div class="tl-item">';
@@ -1061,7 +1076,7 @@ function renderResultado(rows) {
         }
 
         if (prevFmt && isUltimoStatus) tlHtml += '<div class="tl-pill pill-yellow">' + icon('clock') + ' Previsão de entrega: <strong>' + esc(prevFmt) + '</strong></div>';
-        if (entFmt)    tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
+        if (entFmt && !isRedespachoTimeline) tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
 
         if (obs && obs.trim()) {
             tlHtml += '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obs.trim()) + '</div>';
