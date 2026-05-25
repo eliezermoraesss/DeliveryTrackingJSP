@@ -279,12 +279,13 @@
         }
         .title-pill {
             display: inline-flex; align-items: center; gap: 5px;
-            padding: 5px 9px;
+            padding: 6px 11px;
             border-radius: 999px;
-            background: rgba(255,255,255,.08);
-            color: rgba(255,255,255,.86);
-            font-size: .72rem;
-            font-weight: 800;
+            background: #fff;
+            color: #000;
+            font-size: .78rem;
+            font-weight: 900;
+            box-shadow: 0 6px 14px rgba(0,0,0,.14);
         }
         .nota-header-meta {
             color: rgba(255,255,255,.72); font-size: .82rem;
@@ -297,12 +298,13 @@
         .btn-danfe {
             display: inline-flex; align-items: center; gap: 7px;
             height: 38px; padding: 0 14px;
-            border-radius: 999px; border: 1px solid rgba(255,255,255,.28);
-            background: rgba(255,255,255,.08); color: #fff;
+            border-radius: 999px; border: 1px solid #d97706;
+            background: var(--yellow); color: #000;
             font-size: .74rem; font-weight: 800; text-transform: uppercase;
             letter-spacing: .4px; cursor: pointer; transition: var(--tr);
+            box-shadow: 0 10px 18px rgba(245,158,11,.28);
         }
-        .btn-danfe:hover { background: rgba(255,255,255,.16); transform: translateY(-1px); }
+        .btn-danfe:hover { background: #d97706; color: #fff; transform: translateY(-1px); }
         .route-trail {
             flex: 1 0 100%;
             display: grid;
@@ -312,31 +314,34 @@
         }
         .route-step {
             position: relative;
-            background: rgba(255,255,255,.06);
-            border: 1px solid rgba(255,255,255,.10);
+            background: #fff;
+            border: 1px solid rgba(255,255,255,.42);
             border-radius: 10px;
             padding: 10px 12px;
             min-height: 74px;
+            box-shadow: 0 10px 22px rgba(0,0,0,.12);
         }
         .route-step label {
             display: block;
             font-size: .65rem; font-weight: 850;
-            color: rgba(255,255,255,.62);
+            color: #374151;
             text-transform: uppercase; letter-spacing: .5px;
             margin-bottom: 5px;
         }
         .route-step strong {
             display: block;
-            color: #fff;
-            font-size: .82rem;
+            color: #000;
+            font-size: .9rem;
+            font-weight: 900;
             line-height: 1.25;
             word-break: break-word;
         }
         .route-step span {
             display: block;
             margin-top: 3px;
-            color: rgba(255,255,255,.72);
-            font-size: .72rem;
+            color: #000;
+            font-size: .76rem;
+            font-weight: 600;
             line-height: 1.25;
             word-break: break-word;
         }
@@ -446,25 +451,26 @@
         .dot-default  { background: var(--gray-400);    box-shadow: 0 0 0 2px var(--gray-400); }
 
         .tl-card {
-            background: var(--gray-100); border: 1px solid var(--gray-200);
+            background: #fff; border: 1px solid var(--gray-200);
             border-radius: var(--radius-md); padding: 16px 18px;
-            transition: var(--tr);
+            transition: var(--tr); color: #000;
         }
-        .tl-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-primary); background: #f0f4ff; }
-        .tl-card.card-entregue { background: var(--green-light); border-color: #a8d5b5; }
-        .tl-card.card-entregue:hover { background: #d4edda; }
-        .tl-card.card-redespacho { background: #ffedd5; border-color: #fdba74; }
-        .tl-card.card-redespacho:hover { background: #fed7aa; border-color: var(--yellow); }
+        .tl-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-primary); background: #fff; }
+        .tl-card.card-entregue { background: #fff; border-color: #a8d5b5; border-left: 5px solid var(--green-ok); }
+        .tl-card.card-entregue:hover { background: #fff; }
+        .tl-card.card-redespacho { background: #fff; border-color: #fdba74; border-left: 5px solid var(--yellow); }
+        .tl-card.card-redespacho:hover { background: #fff; border-color: var(--yellow); }
 
         .tl-top {
             display: flex; justify-content: space-between;
             align-items: flex-start; gap: 14px; flex-wrap: wrap;
         }
         .tl-event {
-            font-size: 1rem;
-            font-weight: 850;
-            color: var(--brand);
-            line-height: 1.25;
+            font-size: 1.08rem;
+            font-weight: 900;
+            color: #000;
+            line-height: 1.35;
+            letter-spacing: 0;
         }
         .tl-timebox {
             display: flex;
@@ -504,11 +510,11 @@
 
         .tl-meta { margin-top: 8px; display: flex; gap: 12px; flex-wrap: wrap; }
         .tl-meta-item {
-            font-size: .78rem; color: var(--brand);
+            font-size: .78rem; color: #000;
             font-weight: 650;
             display: flex; align-items: center; gap: 3px;
         }
-        .tl-meta-item strong { color: var(--gray-800); }
+        .tl-meta-item strong { color: #000; }
 
         .tl-pill {
             margin-top: 8px;
@@ -525,8 +531,8 @@
             border-left: 3px solid var(--blue-primary);
             border-radius: 0 6px 6px 0;
             padding: 9px 13px;
-            font-size: .82rem; color: var(--gray-800);
-            font-weight: 700;
+            font-size: .82rem; color: #000;
+            font-weight: 400;
             line-height: 1.6; white-space: pre-wrap; word-break: break-word;
         }
         .tl-obs-label {
@@ -592,10 +598,10 @@
     <div class="search-card">
         <div class="search-row">
             <div class="search-field">
-                <label for="inputNota">Digite o Número da Nota</label>
+                <label for="inputNota">Nota Fiscal</label>
                 <input type="text"
                        id="inputNota"
-                       placeholder="Ex: 1100011"
+                       placeholder="Digite o n° da nota fiscal"
                        autocomplete="off"
                        inputmode="numeric"
                        pattern="[0-9]*"
@@ -694,7 +700,7 @@ async function fetchOcorrencias(numeroNota) {
               "EMP.NOMEFANTASIA AS NOMEFANTASIA_ORIGEM, " +
               "OC.TRANSPORTADORA AS CNPJ_TRANSP, " +
               "(SELECT MAX(P1.NOMEPARC) FROM TGFPAR P1 WHERE P1.CGC_CPF = OC.TRANSPORTADORA) AS NOME_TRANSP, " +
-              "CAB.CODPARCREDESPACHO AS TRANSP_REDESPACHO, " +
+              "(SELECT MAX(P4.CGC_CPF) FROM TGFPAR P4 WHERE P4.CODPARC = CAB.CODPARCREDESPACHO) AS TRANSP_REDESPACHO, " +
               "(SELECT MAX(P2.NOMEPARC) FROM TGFPAR P2 WHERE P2.CODPARC = CAB.CODPARCREDESPACHO) AS NOME_TRANSP_REDESPACHO, " +
               "PAR.CGC_CPF AS CNPJ_CLIENTE, " +
               "(SELECT MAX(P3.NOMEPARC) FROM TGFPAR P3 WHERE P3.CGC_CPF = PAR.CGC_CPF) AS NOME_CLIENTE " +
@@ -877,6 +883,12 @@ function orDash(v, prefix) {
     return '<span>' + esc(prefix || '') + esc(v) + '</span>';
 }
 
+function formatCnpj(value) {
+    var digits = String(value || '').replace(/\D/g, '');
+    if (digits.length !== 14) return value || '';
+    return digits.replace(/^(\d{2})(\d{3})(\d{3})(\d{4})(\d{2})$/, '$1.$2.$3/$4-$5');
+}
+
 function firstField(rows, name) {
     for (var i = 0; i < rows.length; i++) {
         var value = field(rows[i], name);
@@ -889,7 +901,7 @@ function routeStep(label, codigo, nome) {
     if (!codigo && !nome) return '';
     return '<div class="route-step">' +
            '<label>' + esc(label) + '</label>' +
-           '<strong>' + esc(codigo || '-') + '</strong>' +
+           '<strong>' + esc(formatCnpj(codigo) || '-') + '</strong>' +
            '<span>' + esc(nome || '-') + '</span>' +
            '</div>';
 }
@@ -907,7 +919,7 @@ function renderRouteTrail(rows) {
     var html = '';
     html += routeStep('Origem', origemCnpj, origemNome);
     html += routeStep('Transportadora', transpCnpj, transpNome);
-    if (redespacho) html += routeStep('Redespacho', 'Cod. ' + redespacho, redespNome);
+    if (redespacho) html += routeStep('Redespacho', redespacho, redespNome);
     html += routeStep('Cliente', clienteCnpj, clienteNome);
 
     document.getElementById('routeTrail').innerHTML = html;
