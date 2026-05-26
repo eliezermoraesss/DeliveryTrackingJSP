@@ -504,7 +504,7 @@
             font-size: .58rem; font-weight: 700; color: #fff;
         }
         .tl-dot .icon-svg { width: 15px; height: 15px; }
-        .tl-dot img { width: 40px; height: 40px; object-fit: contain; }
+        .tl-dot img { width: 64px; height: 64px; object-fit: contain; }
         .dot-entregue { background: var(--green-ok);    box-shadow: 0 0 0 2px var(--green-ok); }
         .dot-redespacho { background: var(--yellow);     box-shadow: 0 0 0 2px var(--yellow); color: #442800; }
         .dot-cidade   { background: #7c3aed;            box-shadow: 0 0 0 2px #7c3aed; }
@@ -518,6 +518,7 @@
             border-radius: var(--radius-md); padding: 14px 16px;
             transition: var(--tr); color: #000;
             max-width: 85%;
+            margin: 0 auto;
         }
         .tl-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-primary); background: #fff; }
         .tl-card.card-entregue { background: #fff; border-color: #a8d5b5; border-left: 5px solid var(--green-ok); }
