@@ -6,6 +6,27 @@
     request.setCharacterEncoding("UTF-8");
     response.setCharacterEncoding("UTF-8");
     response.setContentType("text/html; charset=UTF-8");
+
+    String userIdParam = request.getParameter("userID"); 
+    if (userIdParam == null || userIdParam.trim().isEmpty()) { 
+        Object userIdAttr = request.getAttribute("userID"); 
+        if (userIdAttr != null) {
+            userIdParam = userIdAttr.toString(); 
+        } 
+    } 
+    if (userIdParam == null || userIdParam.trim().isEmpty()) { 
+        Object codusuLog = request.getAttribute("CODUSU_LOG"); 
+        if (codusuLog != null) { 
+            userIdParam = codusuLog.toString();
+        } 
+    } 
+    if (userIdParam == null) { 
+        userIdParam = "0"; 
+    } 
+    userIdParam = userIdParam.replaceAll("[^0-9]", ""); 
+    if (userIdParam.trim().isEmpty()) { 
+        userIdParam = "0"; 
+    } 
 %>
 <html lang="pt-br">
 <head>
@@ -179,7 +200,7 @@
             margin-bottom: 18px;
         }
         .search-row { display: flex; gap: 12px; align-items: flex-end; flex-wrap: wrap; justify-content: center; }
-        .search-field { flex: 1; max-width: 240px; }
+        .search-field { flex: 1; max-width: 240px; position: relative; }
         .search-field label {
             display: block; font-size: .75rem; font-weight: 700;
             color: var(--text-muted); text-transform: uppercase;
@@ -197,6 +218,47 @@
             box-shadow: 0 0 0 4px rgba(59,130,246,.14);
         }
         .search-field input.input-error { border-color: var(--red); }
+        .history-panel {
+            display: none;
+            position: absolute;
+            top: calc(100% + 8px);
+            left: 0;
+            right: 0;
+            z-index: 20;
+            background: #fff;
+            border: 1px solid var(--gray-200);
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            max-height: 250px;
+            overflow-y: auto;
+        }
+        .history-panel.open { display: block; }
+        .history-item {
+            width: 100%;
+            min-height: 48px;
+            border: 0;
+            border-bottom: 1px solid var(--gray-200);
+            background: #fff;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            color: #000;
+            cursor: pointer;
+            text-align: left;
+        }
+        .history-item:last-child { border-bottom: 0; }
+        .history-item:hover,
+        .history-item:focus { background: var(--yellow-light); outline: none; }
+        .history-note { font-size: .95rem; font-weight: 900; color: #000; }
+        .history-date { font-size: .72rem; font-weight: 700; color: var(--gray-600); white-space: nowrap; }
+        .history-empty {
+            padding: 12px;
+            font-size: .78rem;
+            font-weight: 700;
+            color: var(--gray-600);
+        }
 
         .btn-search {
             height: 52px; padding: 0 26px;
@@ -211,12 +273,12 @@
 
         .btn-clear {
             height: 52px; padding: 0 18px;
-            background: var(--gray-100); color: var(--text-muted);
-            border: 1px solid var(--muted-line); border-radius: var(--radius-md);
+            background: var(--red-light); color: #dc2626;
+            border: 1px solid #fecaca; border-radius: var(--radius-md);
             font-size: .88rem; font-weight: 600; cursor: pointer; transition: var(--tr);
             display: inline-flex; align-items: center; justify-content: center;
         }
-        .btn-clear:hover { background: var(--gray-200); color: var(--text); }
+        .btn-clear:hover { background: #fca5a5; color: #991b1b; border-color: #fca5a5; }
 
         /* ===== SPINNER ===== */
         .loading-area {
@@ -442,6 +504,7 @@
             font-size: .58rem; font-weight: 700; color: #fff;
         }
         .tl-dot .icon-svg { width: 15px; height: 15px; }
+        .tl-dot img { width: 40px; height: 40px; object-fit: contain; }
         .dot-entregue { background: var(--green-ok);    box-shadow: 0 0 0 2px var(--green-ok); }
         .dot-redespacho { background: var(--yellow);     box-shadow: 0 0 0 2px var(--yellow); color: #442800; }
         .dot-cidade   { background: #7c3aed;            box-shadow: 0 0 0 2px #7c3aed; }
@@ -607,6 +670,7 @@
                        pattern="[0-9]*"
                        maxlength="12"
                        autofocus/>
+                <div class="history-panel" id="historyPanel"></div>
             </div>
             <button class="btn-search" id="btnRastrear" onclick="rastrear()"><svg class="icon-svg icon-gap"><use href="#i-search" xlink:href="#i-search"></use></svg>Consultar</button>
             <button class="btn-clear" id="btnLimpar" style="display:none" onclick="limpar()"><svg class="icon-svg icon-gap"><use href="#i-x" xlink:href="#i-x"></use></svg>Limpar</button>
@@ -667,8 +731,10 @@
 // que já mantém a sessão do usuário logado
 // ============================================================
 var BASE_URL = '/mge/service.sbr?serviceName=DbExplorerSP.executeQuery&outputType=json';
+var CODUSU_LOGADO = '<%= userIdParam %>';
 var DANFE_ENDPOINT = '';
 var danfeContext = {};
+var historicoNotas = [];
 var QUERY_COLUMNS = [
     'ID', 'NUMERONOTA', 'SERIENOTA', 'CNPJEMISSORCTE', 'EMITENTENOTA',
     'CHAVECTE', 'CHAVENOTA', 'CODIGOOCORRENCIATRANSPORTADORA',
@@ -679,12 +745,71 @@ var QUERY_COLUMNS = [
     'CNPJ_TRANSP', 'NOME_TRANSP', 'TRANSP_REDESPACHO',
     'NOME_TRANSP_REDESPACHO', 'CNPJ_CLIENTE', 'NOME_CLIENTE'
 ];
+var HISTORY_COLUMNS = ['NUMERONOTA', 'DATA_HORA'];
 
 function getSankhyaToken() {
     // O token de sessão fica em cookie ou pode ser lido via API de contexto;
     // para gadgets JSP o Sankhya já injeta a sessão automaticamente nas
     // requisições ao mesmo domínio — basta usar credentials: 'include'
     return null;
+}
+
+function sqlValue(value) {
+    return String(value || '').replace(/'/g, "''");
+}
+
+async function executeSankhyaQuery(sql, fallbackColumns) {
+    var payload = {
+        serviceName: "DbExplorerSP.executeQuery",
+        requestBody: {
+            sql: sql,
+            query: sql
+        }
+    };
+
+    var resp = await fetch('/mge/service.sbr?serviceName=DbExplorerSP.executeQuery&outputType=json', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Accept': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    if (data.status === '1' || data.status === 1 || data.responseBody) {
+        return normalizeQueryResponse(data, fallbackColumns);
+    }
+    throw new Error(data.statusMessage || data.message || 'Erro ao consultar o serviço');
+}
+
+async function executeSankhyaUpdate(sql) {
+    var payload = {
+        serviceName: "DbExplorerSP.executeUpdate",
+        requestBody: {
+            sql: sql,
+            query: sql
+        }
+    };
+
+    var resp = await fetch('/mge/service.sbr?serviceName=DbExplorerSP.executeUpdate&outputType=json', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Accept': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    if (data.status === '1' || data.status === 1 || data.responseBody ||
+        data.response === 'OK' || data.message === 'OK' ||
+        typeof data.updateCount !== 'undefined' || typeof data.rowsAffected !== 'undefined') return data;
+    throw new Error(data.statusMessage || data.message || 'Erro ao gravar histórico');
 }
 
 async function fetchOcorrencias(numeroNota) {
@@ -735,7 +860,7 @@ async function fetchOcorrencias(numeroNota) {
     throw new Error(data.statusMessage || data.message || 'Erro ao consultar o serviço');
 }
 
-function normalizeQueryResponse(data) {
+function normalizeQueryResponse(data, fallbackColumns) {
     var rb = data.responseBody || data.response || data;
     var rawRows = rb.rows || rb.row || rb.result || rb.resultSet || rb.data || rb.records || [];
 
@@ -744,8 +869,8 @@ function normalizeQueryResponse(data) {
     if (rawRows && !Array.isArray(rawRows) && typeof rawRows === 'object') rawRows = [rawRows];
     if (!Array.isArray(rawRows)) rawRows = [];
 
-    var columns = getColumns(rb);
-    if (!columns.length) columns = QUERY_COLUMNS;
+    var columns = getColumns(rb, fallbackColumns);
+    if (!columns.length) columns = fallbackColumns || QUERY_COLUMNS;
 
     return rawRows.map(function(row) {
         var obj = {};
@@ -785,7 +910,7 @@ function normalizeQueryResponse(data) {
     });
 }
 
-function getColumns(rb) {
+function getColumns(rb, fallbackColumns) {
     var meta = rb.fieldsMetadata || rb.fieldsMetaData || rb.columns || rb.metadata || rb.metaData || [];
     var cols = [];
 
@@ -809,7 +934,7 @@ function getColumns(rb) {
                        col.field || col.FIELD || col.columnName || col.COLUMNNAME ||
                        col.alias || col.ALIAS || '';
             }
-            cols.push(normalizeColumnName(name || QUERY_COLUMNS[idx] || ('COL' + idx)));
+            cols.push(normalizeColumnName(name || (fallbackColumns || QUERY_COLUMNS)[idx] || ('COL' + idx)));
         });
     }
 
@@ -858,10 +983,12 @@ function getStatus(cod) {
 
 function getDotClass(cod) {
     var c = (cod || '').toString().trim();
-    if (c === '01' || c === '1')  return { dot: 'dot-entregue', card: 'card-entregue', txt: icon('check') };
-    if (c === '98')               return { dot: 'dot-cidade',   card: '',              txt: icon('map') };
-    if (c === '52')               return { dot: 'dot-transito', card: '',              txt: icon('truck') };
-    if (c === '00' || c === '0')  return { dot: 'dot-coleta',   card: '',              txt: icon('clipboard') };
+    if (c === '01' || c === '1')  return { dot: 'dot-entregue', card: 'card-entregue', txt: '<img src="https://cloud.multfer.com.br/ti/img/caixa_1.jpg" alt="Entregue">' };
+    if (c === '88')               return { dot: 'dot-recusado', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/recusar_1.jpg" alt="Recusado">' };
+    if (c === '25')               return { dot: 'dot-devolvida', card: '',             txt: '<img src="https://cloud.multfer.com.br/ti/img/caixa_devolucao_1.jpg" alt="Devolvida">' };
+    if (c === '98')               return { dot: 'dot-cidade',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/placeholder_1.jpg" alt="Cidade">' };
+    if (c === '52')               return { dot: 'dot-transito', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao-de-entrega_1.jpg" alt="Transito">' };
+    if (c === '00' || c === '0')  return { dot: 'dot-coleta',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/trabalhador-carregando-caixas_1.jpg" alt="Coleta">' };
     return                               { dot: 'dot-default',  card: '',              txt: icon('circle') };
 }
 
@@ -940,6 +1067,126 @@ function baixarDanfe() {
         return;
     }
     window.open(endpoint, '_blank');
+}
+
+async function carregarHistoricoNotas() {
+    if (!CODUSU_LOGADO || CODUSU_LOGADO === '0') {
+        historicoNotas = [];
+        return;
+    }
+
+    var sql = "SELECT NUMERONOTA, TO_CHAR(MAX(DATA), 'DD/MM/YYYY HH24:MI:SS') AS DATA_HORA " +
+              "FROM AD_HISTRASTENTOCOR " +
+              "WHERE CODUSU = " + CODUSU_LOGADO + " " +
+              "GROUP BY NUMERONOTA " +
+              "ORDER BY MAX(DATA) DESC " +
+              "FETCH FIRST 6 ROWS ONLY";
+
+    try {
+        historicoNotas = await executeSankhyaQuery(sql, HISTORY_COLUMNS);
+    } catch (e) {
+        historicoNotas = [];
+        if (window.console) console.warn('Historico de notas indisponivel:', e.message);
+    }
+}
+
+async function salvarHistoricoNota(numeroNota) {
+    if (!CODUSU_LOGADO || CODUSU_LOGADO === '0') {
+        if (window.console) console.warn('Usuário não identificado, histórico não gravado.');
+        return;
+    }
+
+    var agora = new Date();
+    var dia = String(agora.getDate()).padStart(2, '0');
+    var mes = String(agora.getMonth() + 1).padStart(2, '0');
+    var ano = agora.getFullYear();
+    var hora = String(agora.getHours()).padStart(2, '0');
+    var min = String(agora.getMinutes()).padStart(2, '0');
+    var sec = String(agora.getSeconds()).padStart(2, '0');
+    var dataSankhya = dia + '/' + mes + '/' + ano + ' ' + hora + ':' + min + ':' + sec;
+
+    var payload = {
+        serviceName: "DatasetSP.save",
+        requestBody: {
+            dataSetID: "ds_historico",
+            entityName: "AD_HISTRASTENTOCOR",
+            standAlone: false,
+            fields: [
+                "ID",
+                "CODUSU",
+                "NUMERONOTA",
+                "DATA"
+            ],
+            records: [
+                {
+                    values: {
+                        "0": "",
+                        "1": CODUSU_LOGADO,
+                        "2": numeroNota,
+                        "3": dataSankhya
+                    }
+                }
+            ]
+        }
+    };
+
+    try {
+        var resp = await fetch('/mge/service.sbr?serviceName=DatasetSP.save&outputType=json', {
+            method: 'POST',
+            credentials: 'include',
+            headers: {
+                'Content-Type': 'application/json;charset=UTF-8',
+                'Accept': 'application/json;charset=UTF-8'
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!resp.ok) throw new Error('HTTP ' + resp.status);
+        var data = await resp.json();
+        
+        if (data.status === '1' || data.status === 1) {
+            await carregarHistoricoNotas();
+            if (window.console) console.log('Historico gravado para NF', numeroNota);
+        } else {
+            throw new Error(data.statusMessage || data.message || 'Erro na API Sankhya: ' + JSON.stringify(data));
+        }
+    } catch (e) {
+        if (window.console) console.error('Nao foi possivel gravar historico:', e.message);
+    }
+}
+
+function renderHistoricoNotas(filtro) {
+    var panel = document.getElementById('historyPanel');
+    if (!panel) return;
+
+    var termo = somenteNumeros(filtro || '');
+    var itens = historicoNotas.filter(function(item) {
+        var nota = String(field(item, 'NUMERONOTA') || '');
+        return !termo || nota.indexOf(termo) >= 0;
+    }).slice(0, 6);
+
+    if (!itens.length) {
+        panel.innerHTML = historicoNotas.length
+            ? '<div class="history-empty">Nenhuma nota encontrada no histórico.</div>'
+            : '<div class="history-empty">Sem histórico recente para este usuário.</div>';
+        panel.classList.add('open');
+        return;
+    }
+
+    panel.innerHTML = itens.map(function(item) {
+        var nota = field(item, 'NUMERONOTA');
+        var dataHora = field(item, 'DATA_HORA');
+        return '<button type="button" class="history-item" data-nota="' + esc(nota) + '">' +
+               '<span class="history-note">' + esc(nota) + '</span>' +
+               '<span class="history-date">' + esc(dataHora) + '</span>' +
+               '</button>';
+    }).join('');
+    panel.classList.add('open');
+}
+
+function esconderHistoricoNotas() {
+    var panel = document.getElementById('historyPanel');
+    if (panel) panel.classList.remove('open');
 }
 
 // ============================================================
@@ -1059,8 +1306,8 @@ function renderResultado(rows) {
         var dc = getDotClass(cod);
         var isRedespachoTimeline = hasRedespacho && isEntregueRow(r) && idx < rows.length - 1;
         if (isRedespachoTimeline) {
-            nome = 'REDESPACHO';
-            dc = { dot: 'dot-redespacho', card: 'card-redespacho', txt: icon('truck') };
+            nome = 'Redespacho';
+            dc = { dot: 'dot-redespacho', card: 'card-redespacho', txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao-de-entrega_1.jpg" alt="Transito">' };
         }
         var isUltimoStatus = idx === rows.length - 1;
 
@@ -1076,9 +1323,6 @@ function renderResultado(rows) {
 
         // Meta
         var metaItems = [];
-        //if (tCnpj)   metaItems.push(icon('building') + ' <strong>' + esc(tCnpj)   + '</strong>');
-        //if (tTransp) metaItems.push(icon('truck') + ' <strong>' + esc(tTransp) + '</strong>');
-        //if (tUnid)   metaItems.push(icon('box') + ' ' + esc(tUnid));
         if (tCte)    metaItems.push(icon('invoice') + ' CT-e: ' + esc(tCte));
 
         if (metaItems.length) {
@@ -1088,7 +1332,7 @@ function renderResultado(rows) {
         }
 
         if (prevFmt && isUltimoStatus) tlHtml += '<div class="tl-pill pill-yellow">' + icon('clock') + ' Previsão de entrega: <strong>' + esc(prevFmt) + '</strong></div>';
-        if (entFmt && !isRedespachoTimeline) tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
+        if (entFmt && isUltimoStatus && isEntregueRow(r) && !isRedespachoTimeline) tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
 
         if (obs && obs.trim()) {
             tlHtml += '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obs.trim()) + '</div>';
@@ -1142,6 +1386,7 @@ function ehEditavel(el) {
 function limpar() {
     document.getElementById('inputNota').value = '';
     document.getElementById('btnLimpar').style.display = 'none';
+    esconderHistoricoNotas();
     hideAll();
     showWelcome(true);
     document.getElementById('inputNota').focus();
@@ -1151,6 +1396,7 @@ async function rastrear() {
     var input = document.getElementById('inputNota');
     var nota = somenteNumeros(input.value);
     input.value = nota;
+    esconderHistoricoNotas();
 
     if (!nota) {
         input.classList.add('input-error');
@@ -1166,6 +1412,7 @@ async function rastrear() {
 
     try {
         var rows = await fetchOcorrencias(nota);
+        if (rows && rows.length) await salvarHistoricoNota(nota);
         hideAll();
         renderResultado(rows);
         document.getElementById('btnLimpar').style.display = '';
@@ -1181,17 +1428,32 @@ async function rastrear() {
 document.addEventListener('DOMContentLoaded', function() {
     showWelcome(true);
     var inp = document.getElementById('inputNota');
+    var historyPanel = document.getElementById('historyPanel');
+    carregarHistoricoNotas().then(function() {
+        if (inp && document.activeElement === inp) renderHistoricoNotas(inp.value);
+    });
     if (inp) {
+        inp.addEventListener('focus', function() {
+            renderHistoricoNotas(inp.value);
+        });
         inp.addEventListener('input', function() {
             var limpo = somenteNumeros(inp.value);
             if (inp.value !== limpo) inp.value = limpo;
+            renderHistoricoNotas(inp.value);
         });
         inp.addEventListener('paste', function() {
-            setTimeout(function() { inp.value = somenteNumeros(inp.value); }, 0);
+            setTimeout(function() {
+                inp.value = somenteNumeros(inp.value);
+                renderHistoricoNotas(inp.value);
+            }, 0);
         });
         inp.addEventListener('keydown', function(e) {
             var controle = e.ctrlKey || e.metaKey || e.altKey ||
-                ['Backspace','Delete','Tab','Enter','ArrowLeft','ArrowRight','Home','End'].indexOf(e.key) >= 0;
+                ['Backspace','Delete','Tab','Enter','Escape','ArrowLeft','ArrowRight','Home','End'].indexOf(e.key) >= 0;
+            if (e.key === 'Escape') {
+                esconderHistoricoNotas();
+                return;
+            }
             if (e.key === 'Enter') {
                 e.preventDefault();
                 var btn = document.getElementById('btnRastrear');
@@ -1203,8 +1465,21 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
+    if (historyPanel) {
+        historyPanel.addEventListener('mousedown', function(e) {
+            e.preventDefault();
+        });
+        historyPanel.addEventListener('click', function(e) {
+            var item = e.target.closest('.history-item');
+            if (!item || !inp) return;
+            inp.value = somenteNumeros(item.getAttribute('data-nota') || '');
+            esconderHistoricoNotas();
+            inp.focus();
+        });
+    }
 
     document.addEventListener('mousedown', function(e) {
+        if (!e.target.closest('.search-field')) esconderHistoricoNotas();
         if (!ehEditavel(e.target) && ehEditavel(document.activeElement)) {
             document.activeElement.blur();
         }
