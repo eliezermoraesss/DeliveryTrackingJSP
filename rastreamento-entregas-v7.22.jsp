@@ -515,8 +515,9 @@
 
         .tl-card {
             background: #fff; border: 1px solid var(--gray-200);
-            border-radius: var(--radius-md); padding: 16px 18px;
+            border-radius: var(--radius-md); padding: 14px 16px;
             transition: var(--tr); color: #000;
+            max-width: 85%;
         }
         .tl-card:hover { box-shadow: var(--shadow-md); border-color: var(--blue-primary); background: #fff; }
         .tl-card.card-entregue { background: #fff; border-color: #a8d5b5; border-left: 5px solid var(--green-ok); }
