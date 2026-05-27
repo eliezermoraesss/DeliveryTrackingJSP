@@ -442,7 +442,7 @@
         .detail-item span.empty    { color: var(--gray-400); font-style: italic; font-weight: 400; }
 
         /* ===== PROGRESS BAR ===== */
-        .progress-section { padding: 22px 28px; border-bottom: 1px solid var(--gray-200); }
+        .progress-section { padding: 22px 28px; border-bottom: 1px solid var(--gray-400); }
         .progress-steps   { display: flex; align-items: center; }
 
         .step-item {
@@ -489,22 +489,31 @@
         .timeline { position: relative; padding-left: 34px; }
         .timeline::before {
             content: '';
-            position: absolute; left: 11px; top: 10px; bottom: 10px;
-            width: 2px; background: var(--gray-200);
+            position: absolute; left: 10.5px; top: 10px; bottom: 10px;
+            width: 3px; background: var(--gray-400);
         }
 
         .tl-item { position: relative; margin-bottom: 16px; }
         .tl-item:last-child { margin-bottom: 0; }
 
         .tl-dot {
-            position: absolute; left: -32px; top: 13px;
+            position: absolute; left: -36px; top: 50%;
+            transform: translateY(-50%);
             width: 28px; height: 28px; border-radius: 50%;
             border: 3px solid var(--white);
             display: flex; align-items: center; justify-content: center;
             font-size: .58rem; font-weight: 700; color: #fff;
         }
         .tl-dot .icon-svg { width: 15px; height: 15px; }
-        .tl-dot img { width: 64px; height: 64px; object-fit: contain; }
+        .tl-dot img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            object-fit: contain;
+        }
         .dot-entregue { background: var(--green-ok);    box-shadow: 0 0 0 2px var(--green-ok); }
         .dot-redespacho { background: var(--yellow);     box-shadow: 0 0 0 2px var(--yellow); color: #442800; }
         .dot-cidade   { background: #7c3aed;            box-shadow: 0 0 0 2px #7c3aed; }
@@ -514,7 +523,7 @@
         .dot-default  { background: var(--gray-400);    box-shadow: 0 0 0 2px var(--gray-400); }
 
         .tl-card {
-            background: #fff; border: 1px solid var(--gray-200);
+            background: #fff; border: 1px solid var(--gray-400);
             border-radius: var(--radius-md); padding: 14px 16px;
             transition: var(--tr); color: #000;
             max-width: 85%;
