@@ -450,7 +450,7 @@
             align-items: center; position: relative; z-index: 1;
         }
         .step-icon {
-            width: 58px; height: 58px; border-radius: 50%;
+            width: 48px; height: 48px; border-radius: 50%;
             display: flex; align-items: center; justify-content: center;
             border: 3px solid var(--gray-300);
             background: var(--white); transition: var(--tr);
