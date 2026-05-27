@@ -314,6 +314,7 @@
             font-size: .9rem; color: var(--text-muted);
             margin-bottom: 14px; padding: 0 4px;
             display: none;
+            text-align: center;
         }
         .result-count strong { color: var(--brand); }
 
@@ -484,6 +485,11 @@
         .timeline-section h4 {
             font-size: .8rem; font-weight: 800; color: var(--text-muted);
             text-transform: uppercase; letter-spacing: .5px; margin-bottom: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
 
         .timeline { position: relative; padding-left: 34px; }
@@ -1034,6 +1040,13 @@ function getDotClass(cod) {
     return                               { dot: 'dot-default',  card: '',              txt: icon('circle') };
 }
 
+function formatOcorrenciaNome(str) {
+    if (!str) return '';
+    str = String(str).trim();
+    if (!str) return '';
+    return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();
+}
+
 function isEntregueRow(row) {
     var cod = String(field(row, 'CODIGOOCORRENCIATRANSPORTADORA') || '').trim();
     var nome = String(field(row, 'NOMEOCORRENCIA') || '').toUpperCase();
@@ -1335,7 +1348,7 @@ function renderResultado(rows) {
     var hasRedespacho = !!firstField(rows, 'TRANSP_REDESPACHO');
     rows.forEach(function(r, idx) {
         var cod      = String(field(r, 'CODIGOOCORRENCIATRANSPORTADORA') || '').trim();
-        var nome     = field(r, 'NOMEOCORRENCIA') || 'Ocorrência';
+        var nome     = formatOcorrenciaNome(field(r, 'NOMEOCORRENCIA') || 'Ocorrência');
         var dataFmt  = field(r, 'DATA_FMT');
         var prevFmt  = field(r, 'PREVISAO_FMT');
         var entFmt   = field(r, 'ENTREGA_FMT');
