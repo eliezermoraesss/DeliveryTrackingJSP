@@ -1389,10 +1389,14 @@ function renderResultado(rows) {
         if (prevFmt && isUltimoStatus) tlHtml += '<div class="tl-pill pill-yellow">' + icon('clock') + ' Previsão de entrega: <strong>' + esc(prevFmt) + '</strong></div>';
         if (entFmt && isUltimoStatus && isEntregueRow(r) && !isRedespachoTimeline) tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
 
-        var hasObs = obs && obs.trim();
+        var obsText = (obs || '').trim();
+        if (obsText === '-') {
+            obsText = 'Nenhuma observação encontrada';
+        }
+        var hasObs = !!obsText;
         if (hasObs) {
             tlHtml += '<div class="tl-obs-wrapper">';
-            tlHtml +=   '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obs.trim()) + '</div>';
+            tlHtml +=   '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obsText) + '</div>';
             if (cod) {
                 tlHtml += '<div class="cod-row-inline"><span class="cod-badge">Cód. ' + esc(cod) + '</span></div>';
             }
