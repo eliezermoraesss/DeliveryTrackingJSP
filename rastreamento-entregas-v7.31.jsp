@@ -428,7 +428,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 16px;
-            border-bottom: 1px solid var(--gray-400);
+            border-bottom: 1px solid var(--gray-200);
             background: var(--gray-100);
         }
         .detail-item label {
@@ -442,7 +442,7 @@
         .detail-item span.empty    { color: var(--gray-400); font-style: italic; font-weight: 400; }
 
         /* ===== PROGRESS BAR ===== */
-        .progress-section { padding: 22px 28px; border-bottom: 1px solid var(--gray-400); }
+        .progress-section { padding: 22px 28px; border-bottom: 1px solid var(--gray-200); }
         .progress-steps   { display: flex; align-items: center; }
 
         .step-item {
@@ -489,15 +489,21 @@
         .timeline { position: relative; padding-left: 34px; }
         .timeline::before {
             content: '';
-            position: absolute; left: 10.5px; top: 10px; bottom: 10px;
-            width: 3px; background: var(--gray-400);
+            position: absolute;
+            left: calc(3.75% + 14.2px);
+            top: 10px;
+            bottom: 10px;
+            width: 3px;
+            background: var(--gray-400);
         }
 
         .tl-item { position: relative; margin-bottom: 16px; }
         .tl-item:last-child { margin-bottom: 0; }
 
         .tl-dot {
-            position: absolute; left: -36px; top: 50%;
+            position: absolute;
+            left: calc(3.75% - 32.3px);
+            top: 50%;
             transform: translateY(-50%);
             width: 28px; height: 28px; border-radius: 50%;
             border: 3px solid var(--white);
@@ -1022,9 +1028,9 @@ function getDotClass(cod) {
     if (c === '01' || c === '1')  return { dot: 'dot-entregue', card: 'card-entregue', txt: '<img src="https://cloud.multfer.com.br/ti/img/caixa_1.jpg" alt="Entregue">' };
     if (c === '88')               return { dot: 'dot-recusado', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/recusar_1.jpg" alt="Recusado">' };
     if (c === '25')               return { dot: 'dot-devolvida', card: '',             txt: '<img src="https://cloud.multfer.com.br/ti/img/caixa_devolucao_1.jpg" alt="Devolvida">' };
-    if (c === '98')               return { dot: 'dot-cidade',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/placeholder_1.jpg" alt="Cidade">' };
+    if (c === '98')               return { dot: 'dot-cidade',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/destino_1.jpg" alt="Cidade">' };
     if (c === '52')               return { dot: 'dot-transito', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao_1.jpg" alt="Transito">' };
-    if (c === '00' || c === '0')  return { dot: 'dot-coleta',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/processo_inicio_1.jpg" alt="Coleta">' };
+    if (c === '00' || c === '0')  return { dot: 'dot-coleta',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/coleta_caixa_1.jpg" alt="Coleta">' };
     return                               { dot: 'dot-default',  card: '',              txt: icon('circle') };
 }
 
