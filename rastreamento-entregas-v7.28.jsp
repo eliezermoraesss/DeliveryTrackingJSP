@@ -428,7 +428,7 @@
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
             gap: 16px;
-            border-bottom: 1px solid var(--gray-200);
+            border-bottom: 1px solid var(--gray-400);
             background: var(--gray-100);
         }
         .detail-item label {
@@ -614,6 +614,23 @@
             text-transform: uppercase; letter-spacing: .4px; margin-bottom: 4px;
         }
 
+        .tl-obs-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            margin-top: 10px;
+        }
+        .tl-obs-wrapper .tl-obs {
+            flex: 1;
+            margin-top: 0;
+        }
+        .tl-obs-wrapper .cod-row-inline {
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+        }
+
         /* ===== RESPONSIVE ===== */
         @media (max-width: 600px) {
             .search-card { padding: 20px 18px; }
@@ -630,6 +647,14 @@
             .step-line { top: -24px; }
             .tl-timebox { align-items: flex-start; width: 100%; }
             .cod-row { justify-content: flex-start; }
+            .tl-obs-wrapper {
+                flex-direction: column;
+                align-items: flex-end;
+                gap: 8px;
+            }
+            .tl-obs-wrapper .tl-obs {
+                width: 100%;
+            }
         }
     </style>
 </head>
@@ -998,8 +1023,8 @@ function getDotClass(cod) {
     if (c === '88')               return { dot: 'dot-recusado', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/recusar_1.jpg" alt="Recusado">' };
     if (c === '25')               return { dot: 'dot-devolvida', card: '',             txt: '<img src="https://cloud.multfer.com.br/ti/img/caixa_devolucao_1.jpg" alt="Devolvida">' };
     if (c === '98')               return { dot: 'dot-cidade',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/placeholder_1.jpg" alt="Cidade">' };
-    if (c === '52')               return { dot: 'dot-transito', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao-de-entrega_1.jpg" alt="Transito">' };
-    if (c === '00' || c === '0')  return { dot: 'dot-coleta',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/trabalhador-carregando-caixas_1.jpg" alt="Coleta">' };
+    if (c === '52')               return { dot: 'dot-transito', card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao_1.jpg" alt="Transito">' };
+    if (c === '00' || c === '0')  return { dot: 'dot-coleta',   card: '',              txt: '<img src="https://cloud.multfer.com.br/ti/img/processo_inicio_1.jpg" alt="Coleta">' };
     return                               { dot: 'dot-default',  card: '',              txt: icon('circle') };
 }
 
@@ -1091,7 +1116,7 @@ async function carregarHistoricoNotas() {
               "WHERE CODUSU = " + CODUSU_LOGADO + " " +
               "GROUP BY NUMERONOTA " +
               "ORDER BY MAX(DATA) DESC " +
-              "FETCH FIRST 6 ROWS ONLY";
+              "FETCH FIRST 5 ROWS ONLY";
 
     try {
         historicoNotas = await executeSankhyaQuery(sql, HISTORY_COLUMNS);
@@ -1318,7 +1343,7 @@ function renderResultado(rows) {
         var isRedespachoTimeline = hasRedespacho && isEntregueRow(r) && idx < rows.length - 1;
         if (isRedespachoTimeline) {
             nome = 'Redespacho';
-            dc = { dot: 'dot-redespacho', card: 'card-redespacho', txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao-de-entrega_1.jpg" alt="Transito">' };
+            dc = { dot: 'dot-redespacho', card: 'card-redespacho', txt: '<img src="https://cloud.multfer.com.br/ti/img/caminhao_1.jpg" alt="Transito">' };
         }
         var isUltimoStatus = idx === rows.length - 1;
 
@@ -1345,11 +1370,19 @@ function renderResultado(rows) {
         if (prevFmt && isUltimoStatus) tlHtml += '<div class="tl-pill pill-yellow">' + icon('clock') + ' Previsão de entrega: <strong>' + esc(prevFmt) + '</strong></div>';
         if (entFmt && isUltimoStatus && isEntregueRow(r) && !isRedespachoTimeline) tlHtml += '<div class="tl-pill pill-green">' + icon('check') + ' Entregue em: <strong>' + esc(entFmt) + '</strong></div>';
 
-        if (obs && obs.trim()) {
-            tlHtml += '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obs.trim()) + '</div>';
+        var hasObs = obs && obs.trim();
+        if (hasObs) {
+            tlHtml += '<div class="tl-obs-wrapper">';
+            tlHtml +=   '<div class="tl-obs"><div class="tl-obs-label">' + icon('comment') + ' Observação</div>' + esc(obs.trim()) + '</div>';
+            if (cod) {
+                tlHtml += '<div class="cod-row-inline"><span class="cod-badge">Cód. ' + esc(cod) + '</span></div>';
+            }
+            tlHtml += '</div>';
+        } else {
+            if (cod) {
+                tlHtml += '<div class="cod-row"><span class="cod-badge">Cód. ' + esc(cod) + '</span></div>';
+            }
         }
-
-        if (cod) tlHtml += '<div class="cod-row"><span class="cod-badge">Cód. ' + esc(cod) + '</span></div>';
 
         tlHtml += '</div></div>';
     });
