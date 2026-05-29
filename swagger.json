@@ -1,0 +1,170 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Sankhya Document Printing API",
+    "description": "Endpoints do Sankhya utilizados pela tela de rastreamento para emitir e baixar o DANFE.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "https://cloud.multfer.com.br/mgecom/service.sbr",
+      "description": "Servidor de Produção MGECOM"
+    }
+  ],
+  "paths": {
+    "/imprimeDocumentos": {
+      "post": {
+        "summary": "Gera o documento fiscal (DANFE)",
+        "description": "Inicia a transação de geração de um documento fiscal no servidor Sankhya com base no NUNOTA e retorna o transactionId.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ImpressaoNotasSP.imprimeDocumentos"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "notas": {
+                    "type": "object",
+                    "properties": {
+                      "gerarpdf": {
+                        "type": "boolean",
+                        "example": true
+                      },
+                      "nota": {
+                        "type": "array",
+                        "items": {
+                          "type": "object",
+                          "properties": {
+                            "nuNota": {
+                              "type": "integer",
+                              "example": 8341391
+                            },
+                            "tipoImp": {
+                              "type": "integer",
+                              "example": 1
+                            },
+                            "impressaoDanfeSimplicado": {
+                              "type": "boolean",
+                              "example": false
+                            },
+                            "fileName": {
+                              "type": "string",
+                              "example": "8341391_DANFE"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Transação de impressão iniciada com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "1"
+                    },
+                    "transactionId": {
+                      "type": "string",
+                      "example": "5117DA9B3D16C3728DC4B299D0917B4B"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/getDocumentData": {
+      "post": {
+        "summary": "Recupera o PDF do documento",
+        "description": "Obtém o arquivo PDF em formato Base64 da transação de impressão gerada.",
+        "parameters": [
+          {
+            "name": "serviceName",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "example": "ImpressaoNotasSP.getDocumentData"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "params": {
+                    "type": "object",
+                    "properties": {
+                      "NUNOTA": {
+                        "type": "integer",
+                        "example": 8341391
+                      },
+                      "FILENAME": {
+                        "type": "string",
+                        "example": "8341391_DANFE"
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Documento retornado com sucesso",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "1"
+                    },
+                    "responseBody": {
+                      "type": "object",
+                      "properties": {
+                        "PDF": {
+                          "type": "string",
+                          "description": "Data URI do arquivo PDF (Base64)",
+                          "example": "data:application/pdf;base64,JVBERi0xLjQK..."
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

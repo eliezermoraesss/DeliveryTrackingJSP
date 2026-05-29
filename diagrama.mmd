@@ -1,0 +1,24 @@
+sequenceDiagram
+    autonumber
+    actor Usuario as Usuário
+    participant UI as Interface Rastreamento (JSP)
+    participant BD as Banco de Dados (Sankhya)
+    participant WS as WebService (Sankhya API)
+
+    %% Fluxo de Busca
+    Usuario->>UI: Insere Nro Nota / Chave de Acesso
+    UI->>BD: Query SQL (AD_OCORRENCIAS, TGFCAB)
+    BD-->>UI: Retorna Histórico de Eventos (JSON)
+    UI->>UI: Renderiza Timeline Dinâmica
+    UI-->>Usuario: Exibe Status da Entrega na Interface
+    
+    %% Fluxo de Download do DANFE
+    Usuario->>UI: Clica no botão "Baixar DANFE"
+    UI->>BD: Consulta NUNOTA através do NUMNOTA
+    BD-->>UI: Retorna NUNOTA (ID interno)
+    UI->>WS: POST ImpressaoNotasSP.imprimeDocumentos
+    WS-->>UI: Retorna transactionId
+    UI->>WS: POST ImpressaoNotasSP.getDocumentData (usando NUNOTA)
+    WS-->>UI: Retorna PDF codificado em Base64
+    UI->>UI: Converte Base64 para Blob/Anchor e invoca aTag.click()
+    UI-->>Usuario: Download automático do arquivo PDF (DANFE_XXX.pdf)

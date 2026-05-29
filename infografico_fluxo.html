@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infográfico - Fluxo Rastreamento de Entregas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --blue-light: #e0f2fe;
+            --blue-main: #3b82f6;
+            --blue-dark: #1e3a8a;
+            --orange-main: #f97316;
+            --green-main: #22c55e;
+            --bg-color: #f8fafc;
+            --text-dark: #0f172a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-dark);
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .infographic-container {
+            width: 100%;
+            max-width: 1400px;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            padding: 40px;
+            border: 2px solid #e2e8f0;
+        }
+
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 50px;
+            text-align: center;
+        }
+
+        .logo {
+            width: 100px;
+            height: auto;
+        }
+
+        .title {
+            color: var(--blue-dark);
+            font-size: 2.5rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Top Row - Steps */
+        .steps-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .steps-row::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50px;
+            right: 50px;
+            height: 4px;
+            background: #cbd5e1;
+            z-index: 1;
+        }
+
+        .step-card {
+            background: var(--blue-light);
+            border: 3px solid var(--blue-main);
+            border-radius: 16px;
+            width: 160px;
+            height: 180px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 20px 10px;
+            text-align: center;
+            position: relative;
+            z-index: 2;
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+        }
+
+        .step-number {
+            position: absolute;
+            top: -20px;
+            background: var(--blue-main);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.2rem;
+            border: 4px solid white;
+        }
+
+        .step-card.orange { border-color: var(--orange-main); background: #fff7ed; }
+        .step-card.orange .step-number { background: var(--orange-main); }
+        
+        .step-card.green { border-color: var(--green-main); background: #f0fdf4; }
+        .step-card.green .step-number { background: var(--green-main); }
+
+        .step-icon {
+            font-size: 2.5rem;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .step-text {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--blue-dark);
+        }
+
+        /* Arrow styling */
+        .arrow {
+            position: relative;
+            z-index: 2;
+            color: var(--blue-main);
+            font-size: 2rem;
+            font-weight: bold;
+            background: white;
+            padding: 0 5px;
+        }
+
+        /* Middle Section - Architecture */
+        .architecture-row {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 60px;
+            align-items: stretch;
+        }
+
+        .arch-box {
+            flex: 1;
+            border: 2px solid #cbd5e1;
+            border-radius: 16px;
+            padding: 25px;
+            background: #f8fafc;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .arch-box.sankhya {
+            border-color: var(--green-main);
+            background: #f0fdf4;
+        }
+
+        .arch-box h3 {
+            font-size: 1.2rem;
+            margin-bottom: 5px;
+            color: var(--blue-dark);
+        }
+
+        .arch-box p {
+            font-size: 0.85rem;
+            color: #475569;
+        }
+
+        .arch-icon {
+            font-size: 3rem;
+        }
+
+        /* Bottom Section - Monitoring */
+        .bottom-row {
+            display: flex;
+            gap: 20px;
+        }
+
+        .info-card {
+            flex: 1;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+        }
+
+        .info-card-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            color: var(--blue-main);
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .info-card-body {
+            font-size: 0.9rem;
+            line-height: 1.5;
+            color: #334155;
+        }
+
+        .badge {
+            display: inline-block;
+            background: var(--green-main);
+            color: white;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="infographic-container">
+        
+        <div class="header">
+            <!-- Puxando o logo nativo do seu projeto -->
+            <img src="assets/logo-multfer.png" alt="Logo" class="logo" onerror="this.src='https://via.placeholder.com/100x100?text=LOGO'">
+            <h1 class="title">Fluxograma – Rastreamento de Entregas (JSP)</h1>
+        </div>
+
+        <div class="steps-row">
+            <div class="step-card">
+                <div class="step-number">1</div>
+                <div class="step-icon">👤</div>
+                <div class="step-text">USUÁRIO<br><span style="font-size:0.75rem; font-weight:normal;">Acessa a Tela JSP</span></div>
+            </div>
+            
+            <div class="arrow">➔</div>
+
+            <div class="step-card orange">
+                <div class="step-number">2</div>
+                <div class="step-icon">🔍</div>
+                <div class="step-text">BUSCA<br><span style="font-size:0.75rem; font-weight:normal;">Nº Nota ou Chave</span></div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <div class="step-card green">
+                <div class="step-number">3</div>
+                <div class="step-icon">⚙️</div>
+                <div class="step-text">SANKHYA DB<br><span style="font-size:0.75rem; font-weight:normal;">Query Ocorrências</span></div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <div class="step-card">
+                <div class="step-number">4</div>
+                <div class="step-icon">📊</div>
+                <div class="step-text">RENDERIZAÇÃO<br><span style="font-size:0.75rem; font-weight:normal;">Cards e Timeline</span></div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <div class="step-card orange">
+                <div class="step-number">5</div>
+                <div class="step-icon">📄</div>
+                <div class="step-text">DANFE<br><span style="font-size:0.75rem; font-weight:normal;">Requisição PDF</span></div>
+            </div>
+
+            <div class="arrow">➔</div>
+
+            <div class="step-card green">
+                <div class="step-number">6</div>
+                <div class="step-icon">⬇️</div>
+                <div class="step-text">DOWNLOAD<br><span style="font-size:0.75rem; font-weight:normal;">Exportação Nativa</span></div>
+            </div>
+        </div>
+
+        <div class="architecture-row">
+            <div class="arch-box">
+                <div class="arch-icon">💻</div>
+                <div>
+                    <h3>Front-end (UI)</h3>
+                    <p>Página JSP com HTML5/CSS3. Responsável pela interação, captura do NUNOTA e exibição da Timeline animada de entregas.</p>
+                </div>
+            </div>
+            <div class="arch-box sankhya">
+                <div class="arch-icon">🟢</div>
+                <div>
+                    <h3>Sankhya WebService</h3>
+                    <p>APIs Nativas: <code>DatasetSP</code>, <code>ImpressaoNotasSP.imprimeDocumentos</code>. Converte requisições JSON e interage com o banco de dados.</p>
+                </div>
+            </div>
+            <div class="arch-box">
+                <div class="arch-icon">🗄️</div>
+                <div>
+                    <h3>Banco de Dados (Oracle/SQL)</h3>
+                    <p>Consultas simultâneas nas tabelas <strong>TGFCAB</strong> (Cabeçalho) e <strong>AD_OCORRENCIAS</strong> (Status da entrega da transportadora).</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-row">
+            <div class="info-card">
+                <div class="info-card-header">
+                    <span>⏱️</span> TEMPO REAL E SINCRONIA
+                </div>
+                <div class="info-card-body">
+                    A tela não utiliza cache intermediário. Cada clique em "Consultar" dispara uma query direta ao banco, garantindo que o status da mercadoria seja exibido com <strong>100% de precisão e em tempo real</strong>.
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-header">
+                    <span>📂</span> GERENCIAMENTO DE ARQUIVOS (DANFE)
+                </div>
+                <div class="info-card-body">
+                    O fluxo de impressão não depende de pop-ups. A API retorna uma string <strong>Base64</strong> que o navegador converte em PDF e faz o download automático.
+                    <br><span class="badge">NATIVO & SEGURO</span>
+                </div>
+            </div>
+
+            <div class="info-card">
+                <div class="info-card-header">
+                    <span>📈</span> HISTÓRICO DE ACESSOS
+                </div>
+                <div class="info-card-body">
+                    A tabela <strong>AD_HISTRASTENTOCOR</strong> grava logs transparentes associados ao `CODUSU` logado. O sistema puxa as últimas 5 NFes pesquisadas para acesso rápido.
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
