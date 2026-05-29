@@ -668,6 +668,178 @@
                 width: 100%;
             }
         }
+
+        /* ===== MODAL DE IMPRESSÃO ===== */
+        .modal {
+            position: fixed;
+            top: 0; left: 0; z-index: 1055;
+            display: none; width: 100%; height: 100%;
+            overflow-x: hidden; overflow-y: auto;
+            outline: 0;
+            transition: opacity 0.15s linear;
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(4px);
+        }
+        .modal.fade { opacity: 0; }
+        .modal.show { opacity: 1; display: block; }
+        .modal-dialog {
+            position: relative; width: auto; margin: 1.75rem auto;
+            max-width: 500px; pointer-events: none;
+            transform: scale(0.95); transition: transform 0.15s ease-out;
+        }
+        .modal.show .modal-dialog { transform: none; }
+        .modal-content {
+            position: relative; display: flex; flex-direction: column;
+            width: 100%; pointer-events: auto; background-color: var(--surface);
+            background-clip: padding-box; border: 1px solid var(--line);
+            border-radius: var(--radius-lg); outline: 0;
+            box-shadow: var(--shadow-lg);
+            overflow: hidden;
+        }
+        .modal-header {
+            background: linear-gradient(135deg, var(--brand) 0%, var(--brand-soft) 100%);
+            color: #fff;
+            padding: 20px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+        .modal-title {
+            margin: 0;
+            font-size: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .modal-body {
+            position: relative;
+            flex: 1 1 auto;
+            padding: 24px;
+        }
+        .modal-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 16px 24px;
+            border-top: 1px solid var(--line);
+            background: var(--gray-100);
+            gap: 12px;
+        }
+        .btn-close-white {
+            background: transparent url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='%23fff'%3e%3cpath d='M.293.293a1 1 0 011.414 0L8 6.586 14.293.293a1 1 0 111.414 1.414L9.414 8l6.293 6.293a1 1 0 01-1.414 1.414L8 9.414l-6.293 6.293a1 1 0 01-1.414-1.414L6.586 8 .293 1.702a1 1 0 010-1.414z'/%3e%3c/svg%3e") center/1em auto no-repeat;
+            border: 0; padding: .5rem; margin: -.5rem -.5rem -.5rem auto;
+            cursor: pointer;
+            opacity: 0.8;
+            transition: var(--tr);
+        }
+        .btn-close-white:hover { opacity: 1; }
+        .printer-modal-error {
+            display: none;
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: var(--radius-sm);
+            background: var(--red-light);
+            color: #b91c1c;
+            font-size: 0.85rem;
+            font-weight: 600;
+            border: 1px solid #fca5a5;
+        }
+        
+        /* Modal form components */
+        .modal-body p {
+            font-size: 0.95rem;
+            color: var(--gray-600);
+            margin-bottom: 20px;
+            line-height: 1.5;
+        }
+        .modal-body p strong {
+            color: var(--brand);
+            font-weight: 700;
+        }
+        .modal-field {
+            margin-bottom: 18px;
+        }
+        .modal-field label {
+            display: block;
+            font-size: .75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            margin-bottom: 8px;
+        }
+        .modal-field select, .modal-field input {
+            width: 100%;
+            height: 48px;
+            border-radius: var(--radius-md);
+            border: 1px solid var(--muted-line);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--text);
+            padding: 0 16px;
+            outline: none;
+            background: #fff;
+            transition: var(--tr);
+        }
+        .modal-field select:focus, .modal-field input:focus {
+            border-color: var(--blue-primary);
+            box-shadow: 0 0 0 4px rgba(59,130,246,.14);
+        }
+        .btn-modal-cancel {
+            height: 44px;
+            padding: 0 20px;
+            background: transparent;
+            color: var(--gray-600);
+            border: 1px solid var(--muted-line);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--tr);
+        }
+        .btn-modal-cancel:hover {
+            background: var(--gray-200);
+            color: var(--text);
+        }
+        .btn-modal-confirm {
+            height: 44px;
+            padding: 0 24px;
+            background: var(--blue-primary);
+            color: #fff;
+            border: none;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: var(--tr);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-modal-confirm:hover {
+            background: var(--blue-dark);
+            box-shadow: 0 6px 14px rgba(59,130,246,.22);
+        }
+        .btn-modal-confirm:disabled {
+            background: var(--gray-400);
+            cursor: not-allowed;
+        }
+        .spinner-border {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            vertical-align: text-bottom;
+            border: .15em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spinner-border .75s linear infinite;
+        }
+        @keyframes spinner-border {
+            to { transform: rotate(360deg); }
+        }
     </style>
 </head>
 <body>
@@ -772,6 +944,45 @@
     </div>
 
 </div><%-- /wrapper --%>
+
+<!-- MODAL DE IMPRESSÃO DANFE -->
+<div class="modal fade" id="printerModal" tabindex="-1" aria-hidden="true" style="display: none;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <svg class="icon-svg icon-gap"><use href="#i-invoice" xlink:href="#i-invoice"></use></svg>
+                    Impressão do DANFE
+                </h5>
+                <button type="button" class="btn-close-white" onclick="fecharPrinterModal()" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>
+                    Para visualizar ou imprimir o DANFE da nota fiscal <strong id="modalNotaNumero"></strong>, o Sankhya necessita definir a impressora substituta.
+                </p>
+                <div class="modal-field">
+                    <label for="selectPrinter">Impressora Destino</label>
+                    <select id="selectPrinter" onchange="toggleCustomPrinterInput()">
+                        <option value="LOCAL:0/Microsoft Print to PDF" selected>Microsoft Print to PDF (Salvar como PDF)</option>
+                        <option value="CUSTOM">Outra Impressora (Especificar URI)</option>
+                    </select>
+                </div>
+                <div id="customPrinterWrapper" class="modal-field" style="display: none;">
+                    <label for="inputCustomPrinter">URI da Impressora</label>
+                    <input type="text" id="inputCustomPrinter" placeholder="Ex: LOCAL:0/Nome da Impressora" />
+                </div>
+                <div id="printerModalError" class="printer-modal-error"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn-modal-cancel" onclick="fecharPrinterModal()">Cancelar</button>
+                <button type="button" class="btn-modal-confirm" id="btnConfirmarImpressao" onclick="confirmarImpressao()">
+                    <span id="spinnerConfirmar" class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display: none; width: 1rem; height: 1rem;"></span>
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
 
 <script>
 // ============================================================
@@ -1115,13 +1326,297 @@ function resolveDanfeEndpoint() {
         .replace(/\{CHAVECTE\}/g, encodeURIComponent(danfeContext.chavecte || ''));
 }
 
-function baixarDanfe() {
-    var endpoint = resolveDanfeEndpoint();
-    if (!endpoint) {
-        alert('Endpoint do DANFE ainda nao configurado.');
+var activeTransactionId = null;
+var activeNotaNumero = null;
+
+function toggleCustomPrinterInput() {
+    var select = document.getElementById('selectPrinter');
+    var wrapper = document.getElementById('customPrinterWrapper');
+    if (select.value === 'CUSTOM') {
+        wrapper.style.display = 'block';
+        document.getElementById('inputCustomPrinter').focus();
+    } else {
+        wrapper.style.display = 'none';
+    }
+}
+
+function abrirPrinterModal(notaNumero) {
+    var modal = document.getElementById('printerModal');
+    var labelNota = document.getElementById('modalNotaNumero');
+    var select = document.getElementById('selectPrinter');
+    var customInput = document.getElementById('inputCustomPrinter');
+    var errorDiv = document.getElementById('printerModalError');
+    
+    if (labelNota) labelNota.textContent = notaNumero;
+    if (errorDiv) {
+        errorDiv.textContent = '';
+        errorDiv.style.display = 'none';
+    }
+    
+    // Carrega preferência anterior do localStorage
+    var savedType = localStorage.getItem('sankhya_default_printer_type');
+    var savedUri = localStorage.getItem('sankhya_default_printer_uri');
+    
+    if (savedType) {
+        if (savedType === 'CUSTOM') {
+            select.value = 'CUSTOM';
+            if (customInput) customInput.value = savedUri || '';
+        } else {
+            select.value = savedType;
+        }
+    } else {
+        select.value = 'LOCAL:0/Microsoft Print to PDF';
+    }
+    
+    toggleCustomPrinterInput();
+    
+    if (modal) {
+        modal.style.display = 'block';
+        setTimeout(function() {
+            modal.classList.add('show');
+        }, 10);
+    }
+}
+
+function fecharPrinterModal() {
+    var modal = document.getElementById('printerModal');
+    if (modal) {
+        modal.classList.remove('show');
+        setTimeout(function() {
+            modal.style.display = 'none';
+        }, 150);
+    }
+}
+
+async function callSankhyaService(serviceName, path, requestBody) {
+    var payload = {
+        serviceName: serviceName,
+        requestBody: requestBody
+    };
+
+    var url = path + '?serviceName=' + serviceName + '&outputType=json';
+    var resp = await fetch(url, {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+            'Content-Type': 'application/json;charset=UTF-8',
+            'Accept': 'application/json;charset=UTF-8'
+        },
+        body: JSON.stringify(payload)
+    });
+
+    if (!resp.ok) throw new Error('HTTP ' + resp.status);
+    var data = await resp.json();
+    if (data.status === '1' || data.status === 1 || data.responseBody) {
+        return data;
+    }
+    throw new Error(data.statusMessage || data.message || 'Erro ao chamar o serviço ' + serviceName);
+}
+
+function findTransactionId(obj) {
+    if (!obj || typeof obj !== 'object') return null;
+    
+    // Se o status for de erro, não buscar transactionId
+    if (obj.status === '0' || obj.status === 0) return null;
+    
+    // Procurar recursivamente por transactionId ou transactionIds
+    if (obj.transactionId) {
+        if (typeof obj.transactionId === 'string') return obj.transactionId;
+        if (typeof obj.transactionId === 'object') {
+            if (obj.transactionId['$']) return obj.transactionId['$'];
+            if (Array.isArray(obj.transactionId) && obj.transactionId[0]) {
+                return obj.transactionId[0]['$'] || obj.transactionId[0];
+            }
+        }
+    }
+    if (obj.transactionIds) {
+        var ids = obj.transactionIds;
+        if (Array.isArray(ids)) {
+            for (var i = 0; i < ids.length; i++) {
+                var tid = findTransactionId(ids[i]);
+                if (tid) return tid;
+            }
+        } else if (typeof ids === 'object') {
+            var tid = findTransactionId(ids);
+            if (tid) return tid;
+        }
+    }
+    for (var key in obj) {
+        if (obj.hasOwnProperty(key) && typeof obj[key] === 'object') {
+            var tid = findTransactionId(obj[key]);
+            if (tid) return tid;
+        }
+    }
+    return null;
+}
+
+async function confirmarImpressao() {
+    var btn = document.getElementById('btnConfirmarImpressao');
+    var spinner = document.getElementById('spinnerConfirmar');
+    var errorDiv = document.getElementById('printerModalError');
+    var select = document.getElementById('selectPrinter');
+    var customInput = document.getElementById('inputCustomPrinter');
+    
+    var printerUri = select.value;
+    if (printerUri === 'CUSTOM') {
+        printerUri = customInput.value.trim();
+    }
+    
+    if (!printerUri) {
+        errorDiv.textContent = 'Por favor, informe a URI da impressora.';
+        errorDiv.style.display = 'block';
         return;
     }
-    window.open(endpoint, '_blank');
+    
+    errorDiv.style.display = 'none';
+    btn.disabled = true;
+    if (spinner) spinner.style.display = 'inline-block';
+    
+    try {
+        var savePrinterBody = {
+            "substitutePrintersRequest": {
+                "substitutePrinters": {
+                    "pendingPrinter": [
+                        {
+                            "printerUri": {
+                                "$": printerUri
+                            },
+                            "originalPrinterName": {
+                                "$": "SEM IMPRESSORA"
+                            },
+                            "printJobCount": {
+                                "$": "1"
+                            },
+                            "docType": {
+                                "$": "NOTA"
+                            },
+                            "docTypeDescription": {
+                                "$": "Nota"
+                            }
+                        }
+                    ]
+                },
+                "saveSubstitutePrinters": {
+                    "$": "false"
+                },
+                "transactionId": {
+                    "$": activeTransactionId
+                }
+            },
+            "clientEventList": {
+                "clientEvent": [
+                    {"$":"br.com.sankhya.comercial.recalcula.pis.cofins"},{"$":"br.com.sankhya.financeiro.alert.mudanca.titulo.baixa"},{"$":"br.com.sankhya.actionbutton.clientconfirm"},{"$":"br.com.sankhya.mgecom.enviar.recebimento.wms.sncm"},{"$":"comercial.status.nfe.situacao.diferente"},{"$":"comercial.status.nfcom.situacao.diferente"},{"$":"br.com.sankhya.mgecom.compra.SolicitacaoComprador"},{"$":"br.com.sankhya.mgecom.expedicao.SolicitarUsuarioConferente"},{"$":"br.com.sankhya.mgecom.nota.adicional.SolicitarUsuarioGerente"},{"$":"br.com.sankhya.mgecom.cancelamento.nfeAcimaTolerancia"},{"$":"br.com.sankhya.mgecom.cancelamento.nfComForaPrazo"},{"$":"br.com.sankhya.mgecom.cancelamento.processo.wms.andamento"},{"$":"br.com.sankhya.mgecom.msg.nao.possui.itens.pendentes"},{"$":"br.com.sankhya.mgecomercial.event.baixaPortal"},{"$":"br.com.sankhya.comercial.desfaz.renegociacoes.vendamais"},{"$":"br.com.sankhya.comercial.desfaz.renegociacoes.vendamais.devolucao"},{"$":"br.com.sankhya.mgecom.valida.ChaveNFeCompraTerceiros"},{"$":"br.com.sankhya.mgewms.expedicao.validarPedidos"},{"$":"br.com.sankhya.mgecom.gera.lote.xmlRejeitado"},{"$":"br.com.sankhya.comercial.solicitaContingencia"},{"$":"br.com.sankhya.mgecom.cancelamento.notas.remessa"},{"$":"br.com.sankhya.mgecomercial.event.compensacao.credito.debito"},{"$":"br.com.sankhya.modelcore.comercial.cancela.nota.devolucao.wms"},{"$":"br.com.sankhya.mgewms.expedicao.selecaoDocas"},{"$":"br.com.sankhya.mgewms.expedicao.cortePedidos"},{"$":"br.com.sankhya.modelcore.comercial.cancela.nfce.baixa.caixa.fechado"},{"$":"br.com.utiliza.dtneg.servidor"},{"$":"comercial.status.nfe.aceita.naoSomarItem.SelecaoDocumento"}
+                ]
+            }
+        };
+        
+        await callSankhyaService("PrintServiceSP.saveSubstitutePrinter", "/mge/service.sbr", savePrinterBody);
+        
+        // Salvar a preferência no localStorage
+        if (select.value === 'CUSTOM') {
+            localStorage.setItem('sankhya_default_printer_type', 'CUSTOM');
+            localStorage.setItem('sankhya_default_printer_uri', printerUri);
+        } else {
+            localStorage.setItem('sankhya_default_printer_type', select.value);
+            localStorage.setItem('sankhya_default_printer_uri', select.value);
+        }
+        
+        fecharPrinterModal();
+        alert('Impressão do DANFE enviada com sucesso para a impressora: ' + printerUri);
+        
+    } catch (e) {
+        errorDiv.textContent = 'Erro ao submeter impressora: ' + e.message;
+        errorDiv.style.display = 'block';
+    } finally {
+        btn.disabled = false;
+        if (spinner) spinner.style.display = 'none';
+    }
+}
+
+async function baixarDanfe() {
+    var btn = document.getElementById('btnDanfe');
+    if (!danfeContext || !danfeContext.numeronota) {
+        alert('Nenhuma nota carregada para impressão.');
+        return;
+    }
+
+    var originalHtml = btn.innerHTML;
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 6px;"></span>Gerando PDF...';
+
+    try {
+        // 1. Obter o NUNOTA da nota atual
+        var querySql = "SELECT CAB.NUNOTA FROM TGFCAB CAB INNER JOIN AD_OCORRENCIAS OCOR ON CAB.CHAVENFE = OCOR.CHAVENOTA WHERE CAB.NUMNOTA = " + danfeContext.numeronota + " AND ROWNUM = 1";
+        var rows = await executeSankhyaQuery(querySql, ['NUNOTA']);
+        
+        if (!rows || !rows.length) {
+            throw new Error('NUNOTA não encontrado no banco de dados para a nota ' + danfeContext.numeronota);
+        }
+        var nunota = field(rows[0], 'NUNOTA');
+        if (!nunota) {
+            throw new Error('NUNOTA inválido retornado para a nota ' + danfeContext.numeronota);
+        }
+
+        var nunotaInt = parseInt(nunota, 10);
+        var fileNameStr = nunota + "_DANFE";
+
+        // 2. Chamar ImpressaoNotasSP.imprimeDocumentos para gerar o PDF
+        var imprimeBody = {
+            "notas": {
+                "pedidoWeb": false,
+                "portalCaixa": false,
+                "gerarpdf": true,
+                "nota": [
+                    {
+                        "nuNota": nunotaInt,
+                        "tipoImp": 1,
+                        "impressaoDanfeSimplicado": false,
+                        "fileName": fileNameStr
+                    }
+                ]
+            },
+            "clientEventList": {
+                "clientEvent": [
+                    {"$":"br.com.sankhya.comercial.recalcula.pis.cofins"},{"$":"br.com.sankhya.financeiro.alert.mudanca.titulo.baixa"},{"$":"br.com.sankhya.actionbutton.clientconfirm"},{"$":"br.com.sankhya.mgecom.enviar.recebimento.wms.sncm"},{"$":"comercial.status.nfe.situacao.diferente"},{"$":"comercial.status.nfcom.situacao.diferente"},{"$":"br.com.sankhya.mgecom.compra.SolicitacaoComprador"},{"$":"br.com.sankhya.mgecom.expedicao.SolicitarUsuarioConferente"},{"$":"br.com.sankhya.mgecom.nota.adicional.SolicitarUsuarioGerente"},{"$":"br.com.sankhya.mgecom.cancelamento.nfeAcimaTolerancia"},{"$":"br.com.sankhya.mgecom.cancelamento.nfComForaPrazo"},{"$":"br.com.sankhya.mgecom.cancelamento.processo.wms.andamento"},{"$":"br.com.sankhya.mgecom.msg.nao.possui.itens.pendentes"},{"$":"br.com.sankhya.mgecomercial.event.baixaPortal"},{"$":"br.com.sankhya.comercial.desfaz.renegociacoes.vendamais"},{"$":"br.com.sankhya.comercial.desfaz.renegociacoes.vendamais.devolucao"},{"$":"br.com.sankhya.mgecom.valida.ChaveNFeCompraTerceiros"},{"$":"br.com.sankhya.mgewms.expedicao.validarPedidos"},{"$":"br.com.sankhya.mgecom.gera.lote.xmlRejeitado"},{"$":"br.com.sankhya.comercial.solicitaContingencia"},{"$":"br.com.sankhya.mgecom.cancelamento.notas.remessa"},{"$":"br.com.sankhya.mgecomercial.event.compensacao.credito.debito"},{"$":"br.com.sankhya.modelcore.comercial.cancela.nota.devolucao.wms"},{"$":"br.com.sankhya.mgewms.expedicao.selecaoDocas"},{"$":"br.com.sankhya.mgewms.expedicao.cortePedidos"},{"$":"br.com.sankhya.modelcore.comercial.cancela.nfce.baixa.caixa.fechado"},{"$":"br.com.utiliza.dtneg.servidor"},{"$":"comercial.status.nfe.aceita.naoSomarItem.SelecaoDocumento"}
+                ]
+            }
+        };
+
+        await callSankhyaService("ImpressaoNotasSP.imprimeDocumentos", "/mgecom/service.sbr", imprimeBody);
+
+        // 3. Recuperar os dados Base64 do PDF através de getDocumentData
+        var getDataBody = {
+            "params": {
+                "NUNOTA": nunotaInt,
+                "FILENAME": fileNameStr
+            },
+            "clientEventList": imprimeBody.clientEventList
+        };
+
+        var resData = await callSankhyaService("ImpressaoNotasSP.getDocumentData", "/mgecom/service.sbr", getDataBody);
+
+        if (resData && resData.responseBody && resData.responseBody.PDF) {
+            var pdfDataUri = resData.responseBody.PDF;
+            
+            // 4. Criar âncora para baixar o PDF no navegador
+            var a = document.createElement('a');
+            a.href = pdfDataUri;
+            a.download = "DANFE_" + danfeContext.numeronota + ".pdf";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            if (window.console) console.log("Download do DANFE concluído.");
+        } else {
+            throw new Error("Não foi possível recuperar o PDF da nota.");
+        }
+
+    } catch (e) {
+        alert('Erro ao processar impressão do DANFE: ' + e.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = originalHtml;
+    }
 }
 
 async function carregarHistoricoNotas() {
